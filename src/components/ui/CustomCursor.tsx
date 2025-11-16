@@ -32,8 +32,6 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
 
     let mouseX = 0;
     let mouseY = 0;
-    let followerX = 0;
-    let followerY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;

@@ -45,8 +45,8 @@ const AnimatedGradient: FC<AnimatedGradientProps> = ({
       angle += 0.01 * speed;
     };
 
-    const scrollUpdate = () => {
-      const scrollProgress = ScrollTrigger.scrollProgress() || 0;
+    const scrollUpdate = (self: ScrollTrigger) => {
+      const scrollProgress = self.progress || 0;
       angle = scrollProgress * Math.PI * 2;
       updateGradient();
     };

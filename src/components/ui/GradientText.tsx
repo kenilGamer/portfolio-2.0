@@ -62,10 +62,6 @@ const GradientText: FC<GradientTextProps> = ({
       let angle = 0;
       const animateGradient = () => {
         angle += 0.5;
-        const x1 = 50 + Math.sin((angle * Math.PI) / 180) * 30;
-        const y1 = 50 + Math.cos((angle * Math.PI) / 180) * 30;
-        const x2 = 50 - Math.sin((angle * Math.PI) / 180) * 30;
-        const y2 = 50 - Math.cos((angle * Math.PI) / 180) * 30;
 
         textRef.current!.style.background = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
         textRef.current!.style.backgroundClip = 'text';
