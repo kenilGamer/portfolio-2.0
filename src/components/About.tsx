@@ -167,7 +167,7 @@ const About: FC<AboutProps> = ({ scrollToSection }) => {
               </span>
             </h2>
             <p className="about-description text-lg sm:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-              I'm <span className="text-white font-semibold">Kenil Sangani</span>, a passionate developer with a keen eye for design and a love for creating beautiful, functional digital experiences. With expertise in modern web technologies and a focus on user-centered design, I bring ideas to life through code.
+              I'm <span className="text-white font-semibold">Kenil Sangani</span>, Co-founder of <span className="text-white font-semibold">CreativityCoder</span> and a passionate full-stack developer with a keen eye for design and a love for creating beautiful, functional digital experiences. With expertise in modern web technologies and a focus on user-centered design, I bring ideas to life through code.
             </p>
           </div>
 
