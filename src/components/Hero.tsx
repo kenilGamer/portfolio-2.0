@@ -99,16 +99,7 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
           ref={containerRef}
           className="max-w-4xl mx-auto text-center space-y-8"
         >
-          {/* Subtitle */}
-          <div className="hero-subtitle">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-sm sm:text-base text-white/80">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F45D01] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F45D01]"></span>
-              </span>
-              Frontend Developer
-            </span>
-          </div>
+       
 
           {/* Main title */}
           <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tight">
