@@ -32,6 +32,8 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { SplitText } from "gsap/SplitText";
 import { TextPlugin } from "gsap/TextPlugin";
 import ThreeScene from "./components/ThreeScene";
+import CustomCursor from "./components/ui/CustomCursor";
+import ScrollToTop from "./components/ui/ScrollToTop";
 
 gsap.registerPlugin(
   useGSAP,
@@ -95,6 +97,8 @@ const App: FC = () => {
 
   return (
     <div id="smooth-wrapper" className="bg-[#000000] relative select-none overflow-x-hidden">
+      <CustomCursor enabled={typeof window !== 'undefined' && window.innerWidth > 768} />
+      <ScrollToTop />
       <div className="absolute inset-0 w-full h-full">
         <ThreeScene />
       </div>
@@ -119,7 +123,7 @@ const App: FC = () => {
           <Skills />
         </div>
         <div id="services" className="relative">
-          <Services />
+          <Services scrollToSection={scrollToSection} />
         </div>
         <div id="projects" className="relative">
           <Projects />

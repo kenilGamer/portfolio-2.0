@@ -1,7 +1,9 @@
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/all';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
 import { FC, useRef } from 'react';
+import TiltCard from './ui/TiltCard';
 
 
 const Testimonials: FC = () => {
@@ -35,63 +37,81 @@ const Testimonials: FC = () => {
   ];
   
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, SplitText);
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top 60%",
-        end: "+=100%",
-        scrub: 1,
-        markers: true,
       },
     });
-    tl.from(".testimonials-title", {
-      opacity: 0,
-      duration: 0.6,
-      ease: "power2.out",
-    });
+
+    // Animate title
+    setTimeout(() => {
+      const title = document.querySelector('.testimonials-title');
+      if (title) {
+        const split = new SplitText(title, { type: 'chars' });
+        split.chars.forEach((char) => {
+          const charEl = char as HTMLElement;
+          charEl.style.background = 'linear-gradient(180deg, #F45D01 0%, #FF6B35 30%, #6559FF 60%, #4A90E2 100%)';
+          charEl.style.backgroundClip = 'text';
+          charEl.style.webkitBackgroundClip = 'text';
+          charEl.style.webkitTextFillColor = 'transparent';
+          charEl.style.display = 'inline-block';
+        });
+        gsap.from(split.chars, {
+          opacity: 0,
+          y: 30,
+          stagger: 0.03,
+          duration: 0.6,
+          ease: 'power2.out',
+        });
+      }
+    }, 100);
+
     tl.from(".testimonials-description", {
       opacity: 0,
+      y: 20,
       duration: 0.6,
-      ease: "power2.out",
-    });
-    tl.from(".testimonials-cards", {
+    }, '-=0.3')
+    .from(".testimonials-cards", {
       opacity: 0,
-      scale: 0.1,
-      stagger: 0.2,
+      y: 40,
+      scale: 0.95,
+      stagger: 0.15,
       duration: 0.6,
       ease: "power2.out",
-    });
+    }, '-=0.2');
   }, []);
 
   return (
     <section ref={sectionRef} className="relative py-32 overflow-hidden">
-
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-24">
-          <h2 className="text-5xl sm:text-6xl font-bold text-white mb-6 testimonials-title">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r  from-[#F45D01] to-[#6559FF]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="testimonials-title text-5xl sm:text-6xl font-bold text-white mb-6">
               Client Testimonials
-            </span>
-          </h2>
-          <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed testimonials-description">
-            Hear what our clients have to say about their experience working with us.
-          </p>
-        </div>
+            </h2>
+            <p className="testimonials-description text-lg sm:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+              Hear what our clients have to say about their experience working with us.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              ref={(el) => {
-                if (el) {
-                  cardsRef.current[index] = el;
-                }
-              }}
-              className="group testimonials-cards backdrop-blur-xl bg-white/5 rounded-3xl p-8 shadow-2xl border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-[#F45D01]/20"
-            >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <TiltCard
+                key={index}
+                tiltIntensity={8}
+                className="testimonials-cards"
+              >
+                <div
+                  ref={(el) => {
+                    if (el) {
+                      cardsRef.current[index] = el;
+                    }
+                  }}
+                  className="group backdrop-blur-xl bg-white/5 rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#F45D01]/10 h-full"
+                >
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 rounded-full overflow-hidden">
                   <img
@@ -106,9 +126,11 @@ const Testimonials: FC = () => {
                   <p className="text-white/50 text-sm">{testimonial.company}</p>
                 </div>
               </div>
-              <p className="text-white/80 leading-relaxed">{testimonial.content}</p>
-            </div>
-          ))}
+                  <p className="text-white/80 leading-relaxed">{testimonial.content}</p>
+                </div>
+              </TiltCard>
+            ))}
+          </div>
         </div>
       </div>
     </section>

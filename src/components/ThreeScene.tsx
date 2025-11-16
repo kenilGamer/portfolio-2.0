@@ -1,11 +1,13 @@
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import { FC, useRef, useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import React from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const ParticleField = React.memo(({
-  baseColor, accentColor, size, count, speed, spread
+  baseColor, accentColor, size, count, speed, spread, section
 }: {
   baseColor: string;
   accentColor: string;
@@ -13,12 +15,15 @@ const ParticleField = React.memo(({
   count: number;
   speed: number;
   spread: number;
+  section?: string;
 }) => {
   const ref = useRef<THREE.Points>(null);
   const [hovered, setHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [clickPosition, setClickPosition] = useState<{ x: number; y: number; time: number } | null>(null);
   const colorRef = useRef(baseColor);
   const scaleRef = useRef(1);
+  const positionsRef = useRef<Float32Array | null>(null);
 
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3);
@@ -30,35 +35,84 @@ const ParticleField = React.memo(({
       arr[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       arr[i * 3 + 2] = radius * Math.cos(phi);
     }
+    positionsRef.current = arr;
     return arr;
   }, [count, spread]);
 
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    
     const handleMouseMove = (event: MouseEvent) => {
       setMousePosition({
         x: (event.clientX / window.innerWidth) * 2 - 1,
         y: -(event.clientY / window.innerHeight) * 2 + 1
       });
     };
+    
+    const handleClick = (event: MouseEvent) => {
+      setClickPosition({
+        x: (event.clientX / window.innerWidth) * 2 - 1,
+        y: -(event.clientY / window.innerHeight) * 2 + 1,
+        time: Date.now()
+      });
+      
+      // Reset after animation
+      setTimeout(() => setClickPosition(null), 1000);
+    };
+    
     const handleScroll = () => {
       const scrollY = window.scrollY;
       scaleRef.current = Math.min(1 + (scrollY * 0.0005), 2);
     };
+
+    // Section-specific color changes
+    const sections = ['hero', 'about', 'skills', 'services', 'projects', 'contact'];
+    sections.forEach(sec => {
+      ScrollTrigger.create({
+        trigger: `#${sec}`,
+        start: 'top 50%',
+        end: 'bottom 50%',
+        onEnter: () => {
+          if (section === sec) {
+            gsap.to(colorRef, {
+              current: accentColor,
+              duration: 1,
+              ease: 'power2.inOut',
+            });
+          }
+        },
+        onLeave: () => {
+          if (section === sec) {
+            gsap.to(colorRef, {
+              current: baseColor,
+              duration: 1,
+              ease: 'power2.inOut',
+            });
+          }
+        },
+      });
+    });
+    
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [baseColor, accentColor, section]);
 
   useFrame((state) => {
-    if (!ref.current) return;
+    if (!ref.current || !positionsRef.current) return;
     const time = state.clock.getElapsedTime();
+    
     // Color transition
     const noise = Math.sin(time * 0.1) * 0.5 + 0.5;
     const colorValue = (Math.sin(time * 0.5) * 0.5 + 0.5) * noise;
-    const newColor = new THREE.Color(baseColor).lerp(new THREE.Color(accentColor), colorValue);
+    const base = new THREE.Color(typeof colorRef.current === 'string' ? colorRef.current : baseColor);
+    const accent = new THREE.Color(accentColor);
+    const newColor = base.lerp(accent, colorValue);
     colorRef.current = '#' + newColor.getHexString();
 
     // Rotation
@@ -67,12 +121,33 @@ const ParticleField = React.memo(({
     ref.current.rotation.y = time * rotationSpeed * (1 + Math.cos(time * 0.3) * 0.2);
     ref.current.rotation.z = time * rotationSpeed * 0.5 * (1 + Math.sin(time * 0.4) * 0.1);
 
-    // Mouse influence
+    // Mouse influence with trail effect
     const mouseInfluence = 0.1;
     const targetX = mousePosition.x * 3;
     const targetY = mousePosition.y * 3;
     ref.current.position.x = THREE.MathUtils.lerp(ref.current.position.x, targetX, mouseInfluence);
     ref.current.position.y = THREE.MathUtils.lerp(ref.current.position.y, targetY, mouseInfluence);
+
+    // Click explosion effect
+    if (clickPosition && ref.current.geometry) {
+      const positions = ref.current.geometry.attributes.position.array as Float32Array;
+      const elapsed = (Date.now() - clickPosition.time) / 1000;
+      const explosionRadius = elapsed * 5;
+      const fadeOut = Math.max(0, 1 - elapsed);
+      
+      for (let i = 0; i < positions.length; i += 3) {
+        const dx = positions[i] - clickPosition.x * 10;
+        const dy = positions[i + 1] - clickPosition.y * 10;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < explosionRadius && fadeOut > 0) {
+          const force = (1 - distance / explosionRadius) * fadeOut * 2;
+          positions[i] += dx * force * 0.01;
+          positions[i + 1] += dy * force * 0.01;
+        }
+      }
+      ref.current.geometry.attributes.position.needsUpdate = true;
+    }
 
     // Scale
     const distance = Math.sqrt(mousePosition.x ** 2 + mousePosition.y ** 2);
@@ -142,6 +217,7 @@ const ThreeScene: FC = () => {
           count={particleCount1} 
           speed={0.03}
           spread={20}
+          section="hero"
         />
         <ParticleField 
           baseColor="#F45D01" 
@@ -150,6 +226,7 @@ const ThreeScene: FC = () => {
           count={particleCount2} 
           speed={0.04}
           spread={18}
+          section="projects"
         />
         <ParticleField 
           baseColor="#004777" 
@@ -158,6 +235,7 @@ const ThreeScene: FC = () => {
           count={particleCount3} 
           speed={0.035}
           spread={22}
+          section="contact"
         />
       </Canvas>
     </div>

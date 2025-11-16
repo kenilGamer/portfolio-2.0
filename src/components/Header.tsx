@@ -1,6 +1,8 @@
-import { FC, useState, useRef } from 'react';
+import { FC, useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import MagneticButton from './ui/MagneticButton';
 
 interface HeaderProps {
   scrollToSection: (id: string) => void;
@@ -8,10 +10,13 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ scrollToSection }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    
     // Animate header on scroll
     let prevScrollPos = window.scrollY;
     const handleScroll = () => {
@@ -34,8 +39,27 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
       prevScrollPos = currentScrollPos;
     };
 
+    // Active section detection
+    const sections = ['hero', 'about', 'skills', 'services', 'projects', 'contact'];
+    sections.forEach(section => {
+      ScrollTrigger.create({
+        trigger: `#${section}`,
+        start: 'top 50%',
+        end: 'bottom 50%',
+        onEnter: () => setActiveSection(section),
+        onEnterBack: () => setActiveSection(section),
+      });
+    });
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.vars.trigger?.toString().includes('#')) {
+          trigger.kill();
+        }
+      });
+    };
   }, []);
 
   // Handle mobile menu animations
@@ -72,20 +96,32 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
           {navItems.map(item => (
-            <button
+            <MagneticButton
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className="text-white/80 hover:text-white hover:scale-105 transition-all duration-300"
+              className={`transition-all duration-300 relative group ${
+                activeSection === item.id ? 'text-white' : 'text-white/80 hover:text-white'
+              }`}
+              magneticStrength={0.2}
             >
-              {item.label}
-            </button>
+              <span className="relative">
+                {item.label}
+                <span 
+                  className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#F45D01] to-[#6559FF] transition-all duration-300 ${
+                    activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`} 
+                />
+              </span>
+            </MagneticButton>
           ))}
-          <button
+          <MagneticButton
             onClick={() => scrollToSection('contact')}
-            className="px-6 py-2 bg-gradient-to-r from-[#F45D01] to-[#6559FF] text-white rounded-full font-semibold hover:shadow-lg hover:shadow-[#F45D01]/20 hover:scale-105 transition-all duration-300"
+            className="px-6 py-2 bg-gradient-to-r from-[#F45D01] to-[#6559FF] text-white rounded-full font-semibold hover:shadow-lg hover:shadow-[#F45D01]/20 transition-all duration-300"
+            magneticStrength={0.3}
+            rippleColor="rgba(255, 255, 255, 0.6)"
           >
             Contact
-          </button>
+          </MagneticButton>
         </div>
 
         {/* Mobile Menu Button */}
@@ -119,15 +155,17 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
               {item.label}
             </button>
           ))}
-          <button
+          <MagneticButton
             onClick={() => {
               scrollToSection('contact');
               setIsMobileMenuOpen(false);
             }}
             className="w-full px-4 py-2 bg-gradient-to-r from-[#F45D01] to-[#6559FF] text-white rounded-full font-semibold hover:shadow-lg hover:shadow-[#F45D01]/20 transition-all duration-300"
+            magneticStrength={0.2}
+            rippleColor="rgba(255, 255, 255, 0.6)"
           >
             Contact
-          </button>
+          </MagneticButton>
         </div>
       )}
     </nav>

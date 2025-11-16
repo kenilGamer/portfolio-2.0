@@ -13,16 +13,19 @@ const Footer: FC<FooterProps> = ({ scrollToSection }) => {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    // 3D floating animation for background elements
-    gsap.to('.footer-bg-element', {
-      y: 'random(-20, 20)',
-      x: 'random(-20, 20)',
-      rotation: 'random(-5, 5)',
-      duration: 'random(3, 5)',
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-    });
+    // 3D floating animation for background elements (only if elements exist)
+    const bgElements = document.querySelectorAll('.footer-bg-element');
+    if (bgElements.length > 0) {
+      gsap.to('.footer-bg-element', {
+        y: 'random(-20, 20)',
+        x: 'random(-20, 20)',
+        rotation: 'random(-5, 5)',
+        duration: 'random(3, 5)',
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      });
+    }
 
     // 3D perspective effect on scroll
     elementsRef.current.forEach((element, index) => {
