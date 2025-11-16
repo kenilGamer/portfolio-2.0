@@ -37,6 +37,7 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
           opacity: 0,
           y: 50,
           rotationX: -90,
+          delay: 1.5,
           stagger: 0.03,
           duration: 0.8,
           ease: 'back.out(1.7)',
