@@ -162,7 +162,7 @@ const Contact: FC = () => {
                       href="tel:+1234567890"
                       className="text-white hover:text-[#6559FF] transition-colors"
                     >
-                      +91 7383740131
+                      +91 9023157933
                     </a>
                   </div>
                 </div>

@@ -386,6 +386,7 @@ const ParticleField = React.memo(({
 
     // Galaxy-like rotation - slow, majestic spin around Z-axis
     // Different rotation speeds for different layers create depth
+    
     const baseRotationSpeed = speed * 0.5;
     const layerOffset = section === 'hero' ? 0 : section === 'projects' ? 0.3 : 0.6;
     const galaxyRotationSpeed = baseRotationSpeed * (1 + layerOffset * 0.2);
