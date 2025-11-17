@@ -287,7 +287,7 @@ const About: FC<AboutProps> = ({ scrollToSection }) => {
             {/* Right Column - Profile Image */}
             <div className="relative about-image">
               <TiltCard tiltIntensity={15} className="h-full">
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-[#F45D01]/20 via-[#6559FF]/20 to-[#4A90E2]/20 rounded-3xl p-8 border border-white/20 relative overflow-hidden group hover:border-white/40 transition-all duration-500">
+                <div className=" backdrop-blur-xl bg-gradient-to-br from-[#F45D01]/20 via-[#6559FF]/20 to-[#4A90E2]/20 rounded-3xl p-8 border border-white/20 relative overflow-hidden group hover:border-white/40 transition-all duration-500">
                   {/* Animated gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-[#F45D01]/10 via-[#6559FF]/10 to-[#4A90E2]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
@@ -298,9 +298,9 @@ const About: FC<AboutProps> = ({ scrollToSection }) => {
                   <div className="relative aspect-square bg-gradient-to-br from-[#F45D01]/30 to-[#6559FF]/30 rounded-2xl flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-500">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <img 
-                      src="/1000068353-Picsart-AiImageEnhancer.jpg-Photoroom.png" 
+                      src="/DSC_0116.png" 
                       alt="Kenil Sangani - Frontend Developer" 
-                      className="w-full h-full object-cover rounded-2xl transform group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover img-filter object-top  rounded-2xl transform group-hover:scale-110 transition-transform duration-700"
                     />
                     
                     {/* Floating badges */}
