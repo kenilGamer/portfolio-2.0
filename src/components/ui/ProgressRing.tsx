@@ -49,7 +49,7 @@ const ProgressRing: FC<ProgressRingProps> = ({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255, 255, 255, 0.1)"
+          stroke="rgba(230, 221, 196, 0.1)"
           strokeWidth={strokeWidth}
         />
         {/* Progress circle */}
@@ -68,15 +68,15 @@ const ProgressRing: FC<ProgressRingProps> = ({
         />
         <defs>
           <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#F45D01" />
-            <stop offset="100%" stopColor="#6559FF" />
+            <stop offset="0%" stopColor="#678983" />
+            <stop offset="100%" stopColor="#E6DDC4" />
           </linearGradient>
         </defs>
       </svg>
       {label && (
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-white">{percentage}%</span>
-          <span className="text-sm text-white/70 mt-1">{label}</span>
+          <span className="text-2xl font-bold text-[#E6DDC4]">{percentage}%</span>
+          <span className="text-sm text-[#E6DDC4]/70 mt-1">{label}</span>
         </div>
       )}
     </div>

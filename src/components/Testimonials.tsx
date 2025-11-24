@@ -53,10 +53,6 @@ const Testimonials: FC = () => {
         const split = new SplitText(title, { type: 'chars' });
         split.chars.forEach((char) => {
           const charEl = char as HTMLElement;
-          charEl.style.background = 'linear-gradient(180deg, #F45D01 0%, #FF6B35 30%, #6559FF 60%, #4A90E2 100%)';
-          charEl.style.backgroundClip = 'text';
-          charEl.style.webkitBackgroundClip = 'text';
-          charEl.style.webkitTextFillColor = 'transparent';
           charEl.style.display = 'inline-block';
         });
         gsap.from(split.chars, {
@@ -89,10 +85,10 @@ const Testimonials: FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="testimonials-title text-5xl sm:text-6xl font-bold text-white mb-6">
+            <h2 className="testimonials-title text-5xl sm:text-6xl font-bold text-[#E6DDC4] mb-6">
               Client Testimonials
             </h2>
-            <p className="testimonials-description text-lg sm:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+            <p className="testimonials-description text-lg sm:text-xl text-[#E6DDC4]/80 max-w-3xl mx-auto leading-relaxed">
               Hear what our clients have to say about their experience working with us.
             </p>
           </div>
@@ -110,7 +106,7 @@ const Testimonials: FC = () => {
                       cardsRef.current[index] = el;
                     }
                   }}
-                  className="group backdrop-blur-xl bg-white/5 rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#F45D01]/10 h-full"
+                  className="group backdrop-blur-xl bg-[#678983]/80 rounded-2xl p-8 border border-[#E6DDC4]/20 hover:border-[#E6DDC4]/40 transition-all duration-300 hover:shadow-xl hover:shadow-[#678983]/20 h-full"
                 >
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 rounded-full overflow-hidden">
@@ -121,12 +117,12 @@ const Testimonials: FC = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">{testimonial.name}</h3>
-                  <p className="text-white/70">{testimonial.role}</p>
-                  <p className="text-white/50 text-sm">{testimonial.company}</p>
+                  <h3 className="text-xl font-semibold text-[#E6DDC4]">{testimonial.name}</h3>
+                  <p className="text-[#E6DDC4]/70">{testimonial.role}</p>
+                  <p className="text-[#E6DDC4]/50 text-sm">{testimonial.company}</p>
                 </div>
               </div>
-                  <p className="text-white/80 leading-relaxed">{testimonial.content}</p>
+                  <p className="text-[#E6DDC4]/80 leading-relaxed">{testimonial.content}</p>
                 </div>
               </TiltCard>
             ))}

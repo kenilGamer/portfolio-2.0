@@ -31,10 +31,11 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { SplitText } from "gsap/SplitText";
 import { TextPlugin } from "gsap/TextPlugin";
-import ThreeScene from "./components/ThreeScene";
+import Galaxy from "./components/LiquidEther";
 import CustomCursor from "./components/ui/CustomCursor";
 import ScrollToTop from "./components/ui/ScrollToTop";
 import PageLoader from "./components/ui/PageLoader";
+import LiquidEther from "./components/LiquidEther";
 
 gsap.registerPlugin(
   useGSAP,
@@ -81,10 +82,10 @@ const App: FC = () => {
     ScrollSmoother.create({
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
-      smooth: 1.5,
-      effects: true,
+      smooth: 1.2,
       normalizeScroll: true,
       smoothTouch: 0.1,
+      // effects: true,
     });
 
     // Update scroll progress and direction
@@ -97,19 +98,44 @@ const App: FC = () => {
   }, []);
 
   return (
-    <div id="smooth-wrapper" className="bg-[#000000] relative select-none overflow-x-hidden">
+    <div
+      id="smooth-wrapper"
+      className="bg-[#181D31] relative select-none overflow-x-hidden"
+    >
       <PageLoader />
-      <CustomCursor enabled={typeof window !== 'undefined' && window.innerWidth > 768} />
+      <CustomCursor
+        enabled={typeof window !== "undefined" && window.innerWidth > 768}
+      />
       <ScrollToTop />
-      <div className="absolute inset-0 w-full h-full">
-        <ThreeScene />
+      <div className="absolute inset-0 w-full h-full pointer-events-none">
+    
+
+
+<LiquidEther
+    colors={[ "#181D31", "#678983", "#E6DDC4","#F0E9D2" ]}
+    mouseForce={10}
+    cursorSize={100}
+    isViscous={false}
+    viscous={30}
+    iterationsViscous={32}
+    iterationsPoisson={32}
+    resolution={0.5}
+    isBounce={false}
+    autoDemo={true}
+    autoSpeed={0.5}
+    autoIntensity={2.2}
+    takeoverDuration={0.25}
+    autoResumeDelay={1000}
+    autoRampDuration={0.6}
+  />
+
       </div>
       <div className="scroll-progress fixed top-0 left-0 right-0 h-1 z-50">
         <div
           className="scroll-progress-bar h-full transition-all duration-300"
           style={{
             width: `${scrollProgress * 100}%`,
-            backgroundColor: isScrolling ? "#F45D01" : "#6559FF",
+            backgroundColor: isScrolling ? "#678983" : "#F0E9D2",
           }}
         />
       </div>

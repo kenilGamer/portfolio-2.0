@@ -15,12 +15,9 @@ const LoadingSpinner: FC<LoadingSpinnerProps> = ({ size = 'md', className = '' }
   return (
     <div className={`${className} flex items-center justify-center`}>
       <div
-        className={`${sizeClasses[size]} border-4 border-white/10 border-t-gradient-to-r border-t-[#F45D01] rounded-full animate-spin`}
-        style={{
-          borderImage: 'linear-gradient(to right, #F45D01, #6559FF) 1',
-        }}
+        className={`${sizeClasses[size]} border-4 border-[#E6DDC4]/10 border-t-[#E6DDC4] rounded-full animate-spin`}
       >
-        <div className="w-full h-full border-4 border-transparent border-t-[#6559FF] rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
+        <div className="w-full h-full border-4 border-transparent border-t-[#E6DDC4]/50 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
       </div>
     </div>
   );

@@ -88,7 +88,7 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
       <div className="flex items-center justify-between px-10 py-4">
         {/* Logo */}
         <div className="flex items-center">
-          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#F45D01] to-[#6559FF] hover:scale-105 transition-transform duration-300">
+          <span className="text-2xl font-bold text-[#E6DDC4] hover:scale-105 transition-transform duration-300">
             Portfolio
           </span>
         </div>
@@ -100,14 +100,14 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
               key={item.id}
               onClick={() => scrollToSection(item.id)}
               className={`transition-all duration-300 relative group ${
-                activeSection === item.id ? 'text-white' : 'text-white/80 hover:text-white'
+                activeSection === item.id ? 'text-[#E6DDC4]' : 'text-[#E6DDC4]/80 hover:text-[#E6DDC4]'
               }`}
               magneticStrength={0.2}
             >
               <span className="relative">
                 {item.label}
                 <span 
-                  className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#F45D01] to-[#6559FF] transition-all duration-300 ${
+                  className={`absolute bottom-0 left-0 h-0.5 bg-[#E6DDC4] transition-all duration-300 ${
                     activeSection === item.id ? 'w-full' : 'w-0 group-hover:w-full'
                   }`} 
                 />
@@ -116,9 +116,9 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
           ))}
           <MagneticButton
             onClick={() => scrollToSection('contact')}
-            className="px-6 py-2 bg-gradient-to-r from-[#F45D01] to-[#6559FF] text-white rounded-full font-semibold hover:shadow-lg hover:shadow-[#F45D01]/20 transition-all duration-300"
+            className="px-6 py-2 bg-[#F0E9D2] text-[#181D31] rounded-full font-semibold hover:bg-[#F0E9D2]/90 hover:shadow-lg hover:shadow-[#F0E9D2]/30 transition-all duration-300"
             magneticStrength={0.3}
-            rippleColor="rgba(255, 255, 255, 0.6)"
+            rippleColor="rgba(24, 29, 49, 0.1)"
           >
             Contact
           </MagneticButton>
@@ -127,7 +127,7 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
         {/* Mobile Menu Button */}
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden text-white/80 hover:text-white transition-colors duration-300"
+          className="md:hidden text-[#E6DDC4]/80 hover:text-[#E6DDC4] transition-colors duration-300"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path 
@@ -142,7 +142,7 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div ref={menuRef} className="md:hidden px-10 py-4 space-y-4 bg-black/90">
+        <div ref={menuRef} className="md:hidden px-10 py-4 space-y-4 bg-[#181D31]/90">
           {navItems.map(item => (
             <button
               key={item.id}
@@ -150,7 +150,7 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
                 scrollToSection(item.id);
                 setIsMobileMenuOpen(false);
               }}
-              className="block w-full text-left text-white/80 hover:text-white transition-colors duration-300"
+              className="block w-full text-left text-[#E6DDC4]/80 hover:text-[#E6DDC4] transition-colors duration-300"
             >
               {item.label}
             </button>
@@ -160,9 +160,9 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
               scrollToSection('contact');
               setIsMobileMenuOpen(false);
             }}
-            className="w-full px-4 py-2 bg-gradient-to-r from-[#F45D01] to-[#6559FF] text-white rounded-full font-semibold hover:shadow-lg hover:shadow-[#F45D01]/20 transition-all duration-300"
+            className="w-full px-4 py-2 bg-[#F0E9D2] text-[#181D31] rounded-full font-semibold hover:bg-[#F0E9D2]/90 hover:shadow-lg hover:shadow-[#F0E9D2]/30 transition-all duration-300"
             magneticStrength={0.2}
-            rippleColor="rgba(255, 255, 255, 0.6)"
+            rippleColor="rgba(24, 29, 49, 0.1)"
           >
             Contact
           </MagneticButton>

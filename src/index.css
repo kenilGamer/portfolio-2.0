@@ -12,6 +12,10 @@ body {
   min-height: 100vh;
 }
 
+::-webkit-scrollbar-thumb{
+  background-color: #678983;
+  border-radius: 10px;
+}
 /* Responsive container */
 .container {
   width: 100%;
@@ -74,7 +78,7 @@ html.has-smooth-scroll {
   position: absolute;
   top: 0;
   right: 0;
-  background-color: #6559FF;
+  background-color: #678983;
   opacity: 0.5;
   width: 7px;
   border-radius: 10px;
@@ -138,7 +142,7 @@ html.has-smooth-scroll {
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(230, 221, 196, 0.4), transparent);
   width: 50%;
   height: 100%;
 }

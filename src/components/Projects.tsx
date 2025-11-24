@@ -75,10 +75,6 @@ const Projects: FC = () => {
         const split = new SplitText(title, { type: 'chars' });
         split.chars.forEach((char) => {
           const charEl = char as HTMLElement;
-          charEl.style.background = 'linear-gradient(180deg, #F45D01 0%, #FF6B35 30%, #6559FF 60%, #4A90E2 100%)';
-          charEl.style.backgroundClip = 'text';
-          charEl.style.webkitBackgroundClip = 'text';
-          charEl.style.webkitTextFillColor = 'transparent';
           charEl.style.display = 'inline-block';
         });
         gsap.from(split.chars, {
@@ -117,10 +113,10 @@ const Projects: FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="project-title text-5xl sm:text-6xl font-bold text-white mb-6">
+            <h2 className="project-title text-5xl sm:text-6xl font-bold text-[#E6DDC4] mb-6">
               Featured Projects
             </h2>
-            <p className="project-description text-lg sm:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+            <p className="project-description text-lg sm:text-xl text-[#E6DDC4]/80 max-w-3xl mx-auto leading-relaxed">
               A showcase of our most impactful and innovative projects.
             </p>
             
@@ -132,8 +128,8 @@ const Projects: FC = () => {
                 onClick={() => setFilter(cat)}
                 className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 ${
                   filter === cat
-                    ? 'bg-gradient-to-r from-[#F45D01] to-[#6559FF] text-white'
-                    : 'bg-white/5 text-white/70 hover:bg-white/10'
+                    ? 'bg-[#F0E9D2] text-[#181D31]'
+                    : 'bg-[#678983] text-[#E6DDC4]/70 hover:bg-[#678983]/80 hover:text-[#E6DDC4]'
                 }`}
                 magneticStrength={0.2}
               >
@@ -156,7 +152,7 @@ const Projects: FC = () => {
                     cardsRef.current[index] = el;
                   }
                 }}
-                className="group backdrop-blur-xl bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#F45D01]/10 h-full"
+                className="group backdrop-blur-xl bg-[#678983]/80 rounded-2xl overflow-hidden border border-[#E6DDC4]/20 hover:border-[#E6DDC4]/40 transition-all duration-300 hover:shadow-xl hover:shadow-[#678983]/20 h-full"
                 onClick={() => setSelectedProject(index)}
               >
                 <div className="relative h-64 overflow-hidden">
@@ -165,23 +161,23 @@ const Projects: FC = () => {
                     alt={project.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#181D31]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#F45D01] to-[#6559FF] flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-12 h-12 rounded-full bg-[#F0E9D2] flex items-center justify-center">
+                      <svg className="w-6 h-6 text-[#181D31]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                     </div>
                   </div>
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-semibold text-white mb-4">{project.title}</h3>
-                  <p className="text-white/80 mb-6">{project.description}</p>
+                  <h3 className="text-2xl font-semibold text-[#E6DDC4] mb-4">{project.title}</h3>
+                  <p className="text-[#E6DDC4]/80 mb-6">{project.description}</p>
                   <div className="flex flex-wrap gap-2 mb-6">
                     {project.tags.map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
-                        className="px-3 py-1 text-sm rounded-full bg-white/10 text-white/70 border border-white/10 hover:bg-white/20 transition-colors duration-300"
+                        className="px-3 py-1 text-sm rounded-full bg-[#678983]/60 text-[#E6DDC4]/90 border border-[#E6DDC4]/20 hover:bg-[#678983] transition-colors duration-300"
                       >
                         {tag}
                       </span>
@@ -194,7 +190,7 @@ const Projects: FC = () => {
                           e?.stopPropagation();
                           window.open(project.link, '_blank');
                         }}
-                        className="inline-flex items-center gap-2 text-white hover:text-[#F45D01] transition-colors duration-300"
+                        className="inline-flex items-center gap-2 text-[#E6DDC4] hover:text-[#F0E9D2] transition-colors duration-300"
                         magneticStrength={0.2}
                       >
                         <span>View Project</span>
@@ -219,7 +215,7 @@ const Projects: FC = () => {
                           e?.stopPropagation();
                           window.open(project.github, '_blank');
                         }}
-                        className="inline-flex items-center gap-2 text-white hover:text-[#F45D01] transition-colors duration-300"
+                        className="inline-flex items-center gap-2 text-[#E6DDC4] hover:text-[#F0E9D2] transition-colors duration-300"
                         magneticStrength={0.2}
                       >
                         <span>GitHub</span>
@@ -242,16 +238,16 @@ const Projects: FC = () => {
         {/* Project Modal */}
         {selectedProject !== null && (
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#181D31]/80 backdrop-blur-sm"
             onClick={() => setSelectedProject(null)}
           >
             <div 
-              className="relative max-w-4xl w-full bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 max-h-[90vh] overflow-y-auto"
+              className="relative max-w-4xl w-full bg-[#678983]/80 backdrop-blur-xl rounded-3xl p-8 border border-[#E6DDC4]/20 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#678983] hover:bg-[#678983]/80 flex items-center justify-center text-[#E6DDC4] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -264,13 +260,13 @@ const Projects: FC = () => {
                     alt={projects[selectedProject].title}
                     className="w-full h-64 object-cover rounded-2xl mb-6"
                   />
-                  <h3 className="text-3xl font-bold text-white mb-4">{projects[selectedProject].title}</h3>
-                  <p className="text-white/80 mb-6 text-lg">{projects[selectedProject].description}</p>
+                  <h3 className="text-3xl font-bold text-[#E6DDC4] mb-4">{projects[selectedProject].title}</h3>
+                  <p className="text-[#E6DDC4]/80 mb-6 text-lg">{projects[selectedProject].description}</p>
                   <div className="flex flex-wrap gap-2 mb-6">
                     {projects[selectedProject].tags.map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
-                        className="px-4 py-2 text-sm rounded-full bg-gradient-to-r from-[#F45D01] to-[#6559FF] text-white"
+                        className="px-4 py-2 text-sm rounded-full bg-[#678983]/60 text-[#E6DDC4] border border-[#E6DDC4]/30"
                       >
                         {tag}
                       </span>

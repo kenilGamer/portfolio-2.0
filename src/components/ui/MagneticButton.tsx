@@ -15,7 +15,7 @@ const MagneticButton: FC<MagneticButtonProps> = ({
   className = '',
   onClick,
   magneticStrength = 0.3,
-  rippleColor = 'rgba(255, 255, 255, 0.5)',
+  rippleColor = 'rgba(230, 221, 196, 0.5)',
   type = 'button',
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);

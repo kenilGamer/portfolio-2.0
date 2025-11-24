@@ -11,7 +11,7 @@ interface GlowEffectProps {
 const GlowEffect: FC<GlowEffectProps> = ({
   children,
   className = '',
-  glowColor = '#F45D01',
+  glowColor = '#678983',
   intensity = 0.5,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);

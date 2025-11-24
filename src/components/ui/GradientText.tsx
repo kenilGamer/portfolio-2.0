@@ -12,7 +12,7 @@ interface GradientTextProps {
 const GradientText: FC<GradientTextProps> = ({
   children,
   className = '',
-  colors = ['#F45D01', '#6559FF', '#004777'],
+  colors = ['#678983', '#E6DDC4', '#F0E9D2'],
   animate = true,
 }) => {
   const textRef = useRef<HTMLSpanElement>(null);

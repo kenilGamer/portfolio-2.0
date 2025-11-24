@@ -26,10 +26,6 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
         
         split.chars.forEach((char) => {
           const charEl = char as HTMLElement;
-          charEl.style.background = 'linear-gradient(180deg, #F45D01 0%, #FF6B35 30%, #6559FF 60%, #4A90E2 100%)';
-          charEl.style.backgroundClip = 'text';
-          charEl.style.webkitBackgroundClip = 'text';
-          charEl.style.webkitTextFillColor = 'transparent';
           charEl.style.display = 'inline-block';
         });
 
@@ -46,23 +42,26 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
     }, 100);
 
     // Animate other elements
-    tl.from('.hero-subtitle', {
-      opacity: 0,
-      y: 30,
-      duration: 0.8,
-    }, '-=0.4')
-    .from('.hero-description', {
-      opacity: 0,
-      y: 20,
-      duration: 0.8,
-    }, '-=0.6')
-    .from('.hero-buttons > *', {
-      opacity: 0,
-      y: 30,
-      scale: 0.9,
-      stagger: 0.1,
-      duration: 0.6,
-    }, '-=0.4');
+    const description = document.querySelector('.hero-description');
+    const buttons = document.querySelectorAll('.hero-buttons > *');
+    
+    if (description) {
+      tl.from('.hero-description', {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+      }, '-=0.6');
+    }
+    
+    if (buttons.length > 0) {
+      tl.from('.hero-buttons > *', {
+        opacity: 0,
+        y: 30,
+        scale: 0.9,
+        stagger: 0.1,
+        duration: 0.6,
+      }, '-=0.4');
+    }
 
     // Parallax on scroll
     ScrollTrigger.create({
@@ -89,8 +88,8 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
     >
       {/* Background gradient orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-[#F45D01]/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-[#6559FF]/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-[#678983]/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-[#E6DDC4]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
 
       {/* Main content */}
@@ -102,7 +101,7 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
        
 
           {/* Main title */}
-          <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tight">
+          <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tight text-[#E6DDC4]">
             Crafting Beautiful
             <br />
             Digital Experiences
@@ -110,13 +109,13 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
 
           {/* Description */}
           <div className="hero-description space-y-4 max-w-2xl mx-auto">
-            <p className="text-lg sm:text-xl md:text-2xl text-white/90 leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-[#E6DDC4]/95 leading-relaxed font-light">
               Building modern, responsive, and interactive web applications with{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F45D01] to-[#6559FF] font-semibold">
+              <span className="text-[#E6DDC4] font-semibold">
                 React, TypeScript, and Next.js
               </span>
             </p>
-            <p className="text-base sm:text-lg text-white/70 leading-relaxed">
+            <p className="text-base sm:text-lg text-[#E6DDC4]/80 leading-relaxed font-light">
               Specializing in elegant UI/UX design, blazing-fast performance optimization,
               and creating intuitive, pixel-perfect user interfaces
             </p>
@@ -126,11 +125,10 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
           <div className="hero-buttons flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <MagneticButton
               onClick={() => scrollToSection('projects')}
-              className="group relative px-8 py-4 bg-gradient-to-r from-[#F45D01] to-[#6559FF] text-white rounded-full text-base font-bold hover:shadow-2xl hover:shadow-[#F45D01]/50 transition-all duration-300 overflow-hidden"
+              className="group relative px-8 py-4 bg-[#F0E9D2] text-[#181D31] rounded-full text-base font-bold hover:bg-[#F0E9D2]/90 hover:shadow-2xl hover:shadow-[#F0E9D2]/30 transition-all duration-300 overflow-hidden"
               magneticStrength={0.4}
-              rippleColor="rgba(255, 255, 255, 0.6)"
+              rippleColor="rgba(24, 29, 49, 0.1)"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-[#6559FF] to-[#F45D01] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <span className="relative flex items-center gap-2 z-10">
                 View My Work
                 <svg
@@ -146,9 +144,9 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
 
             <MagneticButton
               onClick={() => scrollToSection('contact')}
-              className="group relative px-8 py-4 border-2 border-white/30 text-white rounded-full text-base font-bold hover:bg-white/10 hover:border-white/50 hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
+              className="group relative px-8 py-4 border-2 border-[#E6DDC4]/30 text-[#E6DDC4] rounded-full text-base font-bold hover:bg-[#678983]/20 hover:border-[#E6DDC4]/50 hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
               magneticStrength={0.4}
-              rippleColor="rgba(255, 255, 255, 0.4)"
+              rippleColor="rgba(230, 221, 196, 0.4)"
             >
               <span className="flex items-center gap-2">
                 Get in Touch
@@ -170,11 +168,11 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
         <button
           onClick={() => scrollToSection('about')}
-          className="group flex flex-col items-center gap-2 text-white/60 hover:text-white transition-colors"
+          className="group flex flex-col items-center gap-2 text-[#E6DDC4]/70 hover:text-[#E6DDC4] transition-colors duration-300"
         >
           <span className="text-xs uppercase tracking-wider font-medium">Scroll</span>
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2 group-hover:border-white/60 transition-colors">
-            <div className="w-1.5 h-1.5 bg-white/60 rounded-full animate-bounce" />
+          <div className="w-6 h-10 border-2 border-[#E6DDC4]/40 rounded-full flex items-start justify-center p-2 group-hover:border-[#E6DDC4]/80 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#E6DDC4]/20">
+            <div className="w-1.5 h-1.5 bg-[#E6DDC4] rounded-full animate-bounce" />
           </div>
         </button>
       </div>

@@ -22,7 +22,7 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
     // Create trail elements
     for (let i = 0; i < 5; i++) {
       const trail = document.createElement('div');
-      trail.className = 'fixed w-2 h-2 rounded-full bg-gradient-to-r from-[#F45D01] to-[#6559FF] pointer-events-none z-[9999] opacity-0';
+      trail.className = 'fixed w-2 h-2 rounded-full bg-[#E6DDC4] pointer-events-none z-[9999] opacity-0';
       trail.style.transform = 'translate(-50%, -50%)';
       trail.style.transition = 'opacity 0.3s';
       document.body.appendChild(trail);
@@ -141,9 +141,9 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
   if (!enabled) return null;
 
   const cursorStyles = {
-    default: 'bg-white/80',
-    hover: 'bg-gradient-to-r from-[#F45D01] to-[#6559FF]',
-    click: 'bg-[#F45D01]',
+    default: 'bg-[#E6DDC4]/80',
+    hover: 'bg-[#E6DDC4]',
+    click: 'bg-[#E6DDC4]',
   };
 
   return (
@@ -155,9 +155,7 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
       />
       <div
         ref={followerRef}
-        className={`fixed w-8 h-8 rounded-full border-2 border-white/30 pointer-events-none z-[9999] transition-colors duration-200 ${
-          cursorType === 'hover' ? 'border-[#F45D01]' : ''
-        }`}
+        className="fixed w-8 h-8 rounded-full border-2 border-[#E6DDC4]/30 pointer-events-none z-[9999] transition-colors duration-200"
         style={{ transform: 'translate(-50%, -50%)' }}
       />
     </>

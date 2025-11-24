@@ -13,7 +13,7 @@ interface AnimatedGradientProps {
 const AnimatedGradient: FC<AnimatedGradientProps> = ({
   children,
   className = '',
-  colors = ['#F45D01', '#6559FF', '#004777'],
+  colors = ['#678983', '#E6DDC4', '#F0E9D2'],
   speed = 1,
   direction = 'diagonal',
 }) => {
