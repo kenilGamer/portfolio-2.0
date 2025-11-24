@@ -13,7 +13,6 @@ interface ServicesProps {
 const Services: FC<ServicesProps> = ({ scrollToSection }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [hoveredService, setHoveredService] = useState<number | null>(null);
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText);
