@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useRef } from 'react';
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -189,8 +189,6 @@ const Services: FC<ServicesProps> = ({ scrollToSection }) => {
                     }
                   }}
                   className="group relative backdrop-blur-xl bg-[#678983]/80 rounded-2xl p-8 border border-[#E6DDC4]/20 hover:border-[#E6DDC4]/40 hover:bg-[#678983] transition-all duration-500 hover:shadow-2xl overflow-hidden h-full"
-                  onMouseEnter={() => setHoveredService(index)}
-                  onMouseLeave={() => setHoveredService(null)}
                 >
                   {/* Top accent line */}
                   <div className="absolute top-0 left-0 w-0 h-1 bg-[#E6DDC4] group-hover:w-full transition-all duration-500" />
