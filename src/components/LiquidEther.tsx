@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 
 export interface LiquidEtherProps {
@@ -83,9 +83,8 @@ export default function LiquidEther({
   const isVisibleRef = useRef<boolean>(true);
   const resizeRafRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    if (!mountRef.current) return;
-
+  // Memoize palette texture creation
+  const paletteTexture = useMemo(() => {
     function makePaletteTexture(stops: string[]): THREE.DataTexture {
       let arr: string[];
       if (Array.isArray(stops) && stops.length > 0) {
@@ -111,10 +110,17 @@ export default function LiquidEther({
       tex.needsUpdate = true;
       return tex;
     }
+    return makePaletteTexture(colors);
+  }, [colors]);
 
-    const paletteTex = makePaletteTexture(colors);
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    const paletteTex = paletteTexture;
     // Hard-code transparent background vector (alpha 0)
     const bgVec4 = new THREE.Vector4(0, 0, 0, 0);
+
+    type DeviceTier = 'mobile' | 'low' | 'high';
 
     class CommonClass {
       width = 0;
@@ -123,6 +129,7 @@ export default function LiquidEther({
       pixelRatio = 1;
       isMobile = false;
       breakpoint = 768;
+      deviceTier: DeviceTier = 'high';
       fboWidth: number | null = null;
       fboHeight: number | null = null;
       time = 0;
@@ -130,16 +137,66 @@ export default function LiquidEther({
       container: HTMLElement | null = null;
       renderer: THREE.WebGLRenderer | null = null;
       clock: THREE.Clock | null = null;
+      private detectDeviceTier(): DeviceTier {
+        const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+        if (isMobileDevice) return 'mobile';
+        const isLowEnd = (navigator.hardwareConcurrency <= 4) || ((navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4);
+        return isLowEnd ? 'low' : 'high';
+      }
       init(container: HTMLElement) {
         this.container = container;
-        this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+        this.deviceTier = this.detectDeviceTier();
+        
+        // Mobile: pixelRatio 1, Low-end: 1.5, High-end: 2
+        if (this.deviceTier === 'mobile') {
+          this.pixelRatio = 1;
+        } else if (this.deviceTier === 'low') {
+          this.pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+        } else {
+          this.pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        }
+        
         this.resize();
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        // Always transparent
-        this.renderer.autoClear = false;
-        this.renderer.setClearColor(new THREE.Color(0x000000), 0);
-        this.renderer.setPixelRatio(this.pixelRatio);
-        this.renderer.setSize(this.width, this.height);
+        
+        // Disable antialiasing on mobile/low-end devices
+        const useAntialias = this.deviceTier === 'high';
+        
+        try {
+          this.renderer = new THREE.WebGLRenderer({ antialias: useAntialias, alpha: true });
+          // Always transparent
+          this.renderer.autoClear = false;
+          this.renderer.setClearColor(new THREE.Color(0x000000), 0);
+          this.renderer.setPixelRatio(this.pixelRatio);
+          this.renderer.setSize(this.width, this.height);
+          
+          // Handle WebGL context loss
+          const canvas = this.renderer.domElement;
+          canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            console.warn('WebGL context lost');
+          });
+          canvas.addEventListener('webglcontextrestored', () => {
+            console.warn('WebGL context restored');
+            if (this.renderer) {
+              this.renderer.setSize(this.width, this.height);
+            }
+          });
+        } catch (error) {
+          console.warn('Failed to create WebGL renderer, falling back to lower settings:', error);
+          // Fallback: try without antialiasing
+          try {
+            this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+            this.renderer.autoClear = false;
+            this.renderer.setClearColor(new THREE.Color(0x000000), 0);
+            this.renderer.setPixelRatio(1);
+            this.renderer.setSize(this.width, this.height);
+          } catch (fallbackError) {
+            console.error('Failed to create WebGL renderer with fallback settings:', fallbackError);
+            return;
+          }
+        }
+        
         const el = this.renderer.domElement;
         el.style.width = '100%';
         el.style.height = '100%';
@@ -839,18 +896,33 @@ export default function LiquidEther({
       divergence!: Divergence;
       poisson!: Poisson;
       pressure!: Pressure;
-      constructor(options?: Partial<SimOptions>) {
+      constructor(options?: Partial<SimOptions>, deviceTier?: DeviceTier) {
+        // Adaptive settings based on device tier
+        let defaultIterations = 32;
+        let defaultResolution = 0.5;
+        let defaultBFECC = true;
+        
+        if (deviceTier === 'mobile') {
+          defaultIterations = 8;
+          defaultResolution = 0.3;
+          defaultBFECC = false;
+        } else if (deviceTier === 'low') {
+          defaultIterations = 16;
+          defaultResolution = 0.4;
+          defaultBFECC = false;
+        }
+        
         this.options = {
-          iterations_poisson: 32,
-          iterations_viscous: 32,
+          iterations_poisson: defaultIterations,
+          iterations_viscous: defaultIterations,
           mouse_force: 20,
-          resolution: 0.5,
+          resolution: defaultResolution,
           cursor_size: 100,
           viscous: 30,
           isBounce: false,
           dt: 0.014,
           isViscous: false,
-          BFECC: true,
+          BFECC: defaultBFECC,
           ...options
         };
         this.init();
@@ -964,8 +1036,8 @@ export default function LiquidEther({
       scene: THREE.Scene;
       camera: THREE.Camera;
       output: THREE.Mesh;
-      constructor() {
-        this.simulation = new Simulation();
+      constructor(deviceTier?: DeviceTier) {
+        this.simulation = new Simulation(undefined, deviceTier);
         this.scene = new THREE.Scene();
         this.camera = new THREE.Camera();
         this.output = new THREE.Mesh(
@@ -1005,9 +1077,22 @@ export default function LiquidEther({
       autoDriver?: AutoDriver;
       lastUserInteraction = performance.now();
       running = false;
+      // FPS monitoring
+      fps = 60;
+      frameCount = 0;
+      lastFpsUpdate = performance.now();
+      targetFps = 60;
+      minFps = 20;
+      frameSkip = 0;
+      frameSkipCounter = 0;
       private _loop = this.loop.bind(this);
       private _resize = this.resize.bind(this);
       private _onVisibility?: () => void;
+      private previousDimensions = { width: 0, height: 0 };
+      
+      getFPS(): number {
+        return this.fps;
+      }
       constructor(props: any) {
         this.props = props;
         Common.init(props.$wrapper);
@@ -1039,20 +1124,79 @@ export default function LiquidEther({
       init() {
         if (!Common.renderer) return;
         this.props.$wrapper.prepend(Common.renderer.domElement);
-        this.output = new Output();
+        this.output = new Output(Common.deviceTier);
       }
       resize() {
+        if (!Common.container) return;
+        const rect = Common.container.getBoundingClientRect();
+        const newWidth = Math.max(1, Math.floor(rect.width));
+        const newHeight = Math.max(1, Math.floor(rect.height));
+        
+        // Only resize if dimensions changed significantly (10px threshold)
+        const threshold = 10;
+        if (
+          Math.abs(newWidth - this.previousDimensions.width) < threshold &&
+          Math.abs(newHeight - this.previousDimensions.height) < threshold
+        ) {
+          return;
+        }
+        
+        this.previousDimensions = { width: newWidth, height: newHeight };
         Common.resize();
         this.output.resize();
       }
       render() {
-        if (this.autoDriver) this.autoDriver.update();
-        Mouse.update();
+        // Always update clock for timing
         Common.update();
-        this.output.update();
+        
+        // Only update simulation if mouse moved or auto-driver is active, or every other frame
+        const shouldUpdate = Mouse.mouseMoved || (this.autoDriver && this.autoDriver.active) || (this.frameCount % 2 === 0);
+        
+        if (shouldUpdate) {
+          if (this.autoDriver) this.autoDriver.update();
+          Mouse.update();
+          this.output.update();
+        } else {
+          // Still render even if not updating simulation
+          this.output.render();
+        }
       }
       loop() {
         if (!this.running) return;
+        
+        const now = performance.now();
+        
+        // Update FPS every second
+        this.frameCount++;
+        if (now - this.lastFpsUpdate >= 1000) {
+          this.fps = this.frameCount;
+          this.frameCount = 0;
+          this.lastFpsUpdate = now;
+          
+          // Adaptive frame skipping based on FPS
+          if (this.fps < 30) {
+            this.frameSkip = 1; // Skip every other frame
+          } else if (this.fps < 45) {
+            this.frameSkip = 0; // Skip occasionally
+          } else {
+            this.frameSkip = 0; // No skipping
+          }
+          
+          // Pause auto-driver if FPS is too low
+          if (this.fps < this.minFps && this.autoDriver) {
+            this.autoDriver.forceStop();
+          }
+        }
+        
+        // Frame skipping
+        if (this.frameSkip > 0) {
+          this.frameSkipCounter++;
+          if (this.frameSkipCounter % (this.frameSkip + 1) !== 0) {
+            rafRef.current = requestAnimationFrame(this._loop);
+            return;
+          }
+        }
+        
         this.render();
         rafRef.current = requestAnimationFrame(this._loop);
       }
@@ -1141,9 +1285,12 @@ export default function LiquidEther({
     const ro = new ResizeObserver(() => {
       if (!webglRef.current) return;
       if (resizeRafRef.current) cancelAnimationFrame(resizeRafRef.current);
+      // Debounce resize with longer delay
       resizeRafRef.current = requestAnimationFrame(() => {
-        if (!webglRef.current) return;
-        webglRef.current.resize();
+        requestAnimationFrame(() => {
+          if (!webglRef.current) return;
+          webglRef.current.resize();
+        });
       });
     });
     ro.observe(container);
@@ -1181,13 +1328,7 @@ export default function LiquidEther({
     mouseForce,
     resolution,
     viscous,
-    colors,
-    autoDemo,
-    autoSpeed,
-    autoIntensity,
-    takeoverDuration,
-    autoResumeDelay,
-    autoRampDuration
+    colors
   ]);
 
   useEffect(() => {
