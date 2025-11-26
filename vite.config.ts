@@ -9,4 +9,14 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
+  server: {
+    headers: {
+      'X-Robots-Tag': 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+    },
+  },
+  preview: {
+    headers: {
+      'X-Robots-Tag': 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+    },
+  },
 })

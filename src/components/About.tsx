@@ -242,7 +242,7 @@ const About: FC<AboutProps> = ({ scrollToSection }) => {
             {/* Right Column - Profile Image */}
             <div className="relative about-image">
               <TiltCard tiltIntensity={15} className="h-full">
-                <div className=" backdrop-blur-xl bg-[#678983]/80 rounded-3xl p-8 border border-[#E6DDC4]/20 relative overflow-hidden group hover:border-[#E6DDC4]/40 hover:bg-[#678983] transition-all duration-500">
+                <div className=" backdrop-blur-xl bg-[#678983]/30 rounded-3xl p-8 border border-[#E6DDC4]/20 relative overflow-hidden group hover:border-[#E6DDC4]/40 hover:bg-[#678983]/50 transition-all duration-500">
                   {/* Image container */}
                   <div className="relative aspect-square bg-[#678983]/60 rounded-2xl flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-500">
                     <img 
@@ -260,7 +260,8 @@ const About: FC<AboutProps> = ({ scrollToSection }) => {
                     
                     <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 transform translate-y-4 group-hover:translate-y-0">
                       <div className="backdrop-blur-xl bg-[#678983] rounded-full px-4 py-2 border border-[#E6DDC4]/30">
-                        <span className="text-[#E6DDC4] text-sm font-semibold">Frontend Dev</span>
+                       <span className="text-[#E6DDC4] text-sm font-semibold">kenil sangani</span>
+                       
                       </div>
                     </div>
                   </div>
