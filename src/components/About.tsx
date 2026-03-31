@@ -201,7 +201,7 @@ const About: FC<AboutProps> = () => {
             {/* Resume link */}
             <div className="about-item">
               <a
-                href="/cv.pdf"
+                href="/KenilSangani.pdf" target="_blank" rel="noopener noreferrer"
                 download
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '0.4rem',

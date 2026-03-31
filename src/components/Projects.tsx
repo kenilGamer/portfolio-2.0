@@ -5,12 +5,12 @@ import { FC, useRef } from 'react';
 
 const projects = [
   {
-    title: 'E-commerce Platform',
-    description: 'Full-stack e-commerce with Next.js, TypeScript, and MongoDB. Real-time inventory, Stripe payments, admin dashboard.',
-    image: '/image/Screenshot 2025-05-03 193837.png',
-    tags: ['Next.js', 'TypeScript', 'MongoDB', 'Tailwind CSS'],
-    link: 'https://whitezone.vercel.app/',
-    github: 'https://github.com/kenilGamer/whitezone',
+    title: 'Creative website',
+    description: 'A visually stunning portfolio site showcasing creative projects with smooth animations and interactive elements.',
+    image: '/image/Screenshot2026-03-31125723.png',
+    tags: ['Three.js', 'GSAP', 'React', 'Tailwind CSS'],
+    link: 'https://skateboard-one.vercel.app/',
+    github: 'https://github.com/kenilGamer/Skateboard',
   },
   {
     title: '3D Product Viewer',
