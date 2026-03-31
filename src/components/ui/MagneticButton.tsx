@@ -1,9 +1,10 @@
-import { FC, ReactNode, useRef, MouseEvent } from 'react';
+import React, { FC, ReactNode, useRef, MouseEvent } from 'react';
 import { gsap } from 'gsap';
 
 interface MagneticButtonProps {
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   onClick?: (e?: MouseEvent<HTMLButtonElement>) => void;
   magneticStrength?: number;
   rippleColor?: string;
@@ -13,6 +14,7 @@ interface MagneticButtonProps {
 const MagneticButton: FC<MagneticButtonProps> = ({
   children,
   className = '',
+  style,
   onClick,
   magneticStrength = 0.3,
   rippleColor = 'rgba(230, 221, 196, 0.5)',
@@ -93,6 +95,7 @@ const MagneticButton: FC<MagneticButtonProps> = ({
       ref={buttonRef}
       type={type}
       className={`relative overflow-hidden ${className}`}
+      style={style}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

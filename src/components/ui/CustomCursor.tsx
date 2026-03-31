@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 
 interface CustomCursorProps {
@@ -6,161 +6,142 @@ interface CustomCursorProps {
 }
 
 const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const followerRef = useRef<HTMLDivElement>(null);
-  const trailRefs = useRef<HTMLDivElement[]>([]);
-  const [isHovering, setIsHovering] = useState(false);
-  const [cursorType, setCursorType] = useState<'default' | 'hover' | 'click'>('default');
+  const dotRef  = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!enabled || !cursorRef.current || !followerRef.current) return;
+    if (!enabled || !dotRef.current || !ringRef.current) return;
 
-    const cursor = cursorRef.current;
-    const follower = followerRef.current;
-    const trails: HTMLDivElement[] = [];
-
-    // Create trail elements
-    for (let i = 0; i < 5; i++) {
-      const trail = document.createElement('div');
-      trail.className = 'fixed w-2 h-2 rounded-full bg-[#E6DDC4] pointer-events-none z-[9999] opacity-0';
-      trail.style.transform = 'translate(-50%, -50%)';
-      trail.style.transition = 'opacity 0.3s';
-      document.body.appendChild(trail);
-      trails.push(trail);
-      trailRefs.current.push(trail);
-    }
-
-    let mouseX = 0;
-    let mouseY = 0;
+    const dot  = dotRef.current;
+    const ring = ringRef.current;
+    let mouseX = 0, mouseY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
 
-      // Update cursor position immediately
-      gsap.to(cursor, {
+      // Dot: instant
+      gsap.set(dot, { x: mouseX, y: mouseY });
+
+      // Ring: smooth lag
+      gsap.to(ring, {
         x: mouseX,
         y: mouseY,
-        duration: 0,
-      });
-
-      // Update follower with delay
-      gsap.to(follower, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.3,
-        ease: 'power2.out',
-      });
-
-      // Update trail positions
-      trails.forEach((trail, index) => {
-        const delay = index * 0.05;
-        gsap.to(trail, {
-          x: mouseX,
-          y: mouseY,
-          duration: 0.3 + delay,
-          ease: 'power2.out',
-          opacity: 0.3 - index * 0.05,
-        });
+        duration: 0.5,
+        ease: 'power3.out',
       });
     };
 
     const handleMouseEnter = (e: MouseEvent) => {
-      const target = e.target;
-      if (!target || !(target instanceof HTMLElement)) return;
-      
-      if (
+      const target = e.target as HTMLElement;
+      const isInteractive =
         target.tagName === 'A' ||
         target.tagName === 'BUTTON' ||
-        target.closest('button') ||
         target.closest('a') ||
-        target.closest('[role="button"]')
-      ) {
-        setIsHovering(true);
-        setCursorType('hover');
-        gsap.to(cursor, { scale: 1.5, duration: 0.2 });
-        gsap.to(follower, { scale: 1.5, duration: 0.2 });
+        target.closest('button') ||
+        target.closest('[role="button"]');
+
+      if (isInteractive) {
+        // Ring scales up 2x, dot disappears
+        gsap.to(ring, {
+          scale: 2,
+          borderColor: 'var(--accent-cyan)',
+          duration: 0.25,
+          ease: 'back.out(2)',
+        });
+        gsap.to(dot, { opacity: 0, scale: 0, duration: 0.15 });
       }
     };
 
     const handleMouseLeave = (e: MouseEvent) => {
-      const target = e.target;
-      if (!target || !(target instanceof HTMLElement)) return;
-      
-      if (
+      const target = e.target as HTMLElement;
+      const isInteractive =
         target.tagName === 'A' ||
         target.tagName === 'BUTTON' ||
-        target.closest('button') ||
         target.closest('a') ||
-        target.closest('[role="button"]')
-      ) {
-        setIsHovering(false);
-        setCursorType('default');
-        gsap.to(cursor, { scale: 1, duration: 0.2 });
-        gsap.to(follower, { scale: 1, duration: 0.2 });
+        target.closest('button') ||
+        target.closest('[role="button"]');
+
+      if (isInteractive) {
+        gsap.to(ring, {
+          scale: 1,
+          borderColor: 'rgba(0,212,255,0.5)',
+          duration: 0.35,
+          ease: 'elastic.out(1,0.5)',
+        });
+        gsap.to(dot, { opacity: 1, scale: 1, duration: 0.2 });
       }
     };
 
     const handleMouseDown = () => {
-      setCursorType('click');
-      gsap.to(cursor, { scale: 0.8, duration: 0.1 });
-      gsap.to(follower, { scale: 0.8, duration: 0.1 });
+      gsap.to(ring, { scale: 0.85, duration: 0.1 });
+      gsap.to(dot,  { scale: 0.7, duration: 0.1 });
     };
 
     const handleMouseUp = () => {
-      setCursorType(isHovering ? 'hover' : 'default');
-      gsap.to(cursor, { scale: isHovering ? 1.5 : 1, duration: 0.1 });
-      gsap.to(follower, { scale: isHovering ? 1.5 : 1, duration: 0.1 });
+      gsap.to(ring, { scale: 1, duration: 0.2, ease: 'elastic.out(1,0.5)' });
+      gsap.to(dot,  { scale: 1, duration: 0.2 });
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove',  handleMouseMove);
     document.addEventListener('mouseenter', handleMouseEnter, true);
     document.addEventListener('mouseleave', handleMouseLeave, true);
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mouseup', handleMouseUp);
-
-    // Hide default cursor
+    document.addEventListener('mousedown',  handleMouseDown);
+    document.addEventListener('mouseup',    handleMouseUp);
     document.body.style.cursor = 'none';
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousemove',  handleMouseMove);
       document.removeEventListener('mouseenter', handleMouseEnter, true);
       document.removeEventListener('mouseleave', handleMouseLeave, true);
-      document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousedown',  handleMouseDown);
+      document.removeEventListener('mouseup',    handleMouseUp);
       document.body.style.cursor = 'auto';
-      trails.forEach(trail => {
-        if (trail.parentNode) {
-          trail.parentNode.removeChild(trail);
-        }
-      });
-      trailRefs.current = [];
     };
-  }, [enabled, isHovering]);
+  }, [enabled]);
 
   if (!enabled) return null;
 
-  const cursorStyles = {
-    default: 'bg-[#E6DDC4]/80',
-    hover: 'bg-[#E6DDC4]',
-    click: 'bg-[#E6DDC4]',
-  };
-
   return (
     <>
+      {/* Dot — 6px, instant, mix-blend-mode screen */}
       <div
-        ref={cursorRef}
-        className={`fixed w-4 h-4 rounded-full pointer-events-none z-[10000] ${cursorStyles[cursorType]} transition-colors duration-200`}
-        style={{ transform: 'translate(-50%, -50%)' }}
+        ref={dotRef}
+        className="custom-cursor"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '6px',
+          height: '6px',
+          borderRadius: '50%',
+          background: 'var(--accent-cyan)',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          zIndex: 10001,
+          mixBlendMode: 'screen',
+        }}
       />
+
+      {/* Ring — 32px hollow, lagged */}
       <div
-        ref={followerRef}
-        className="fixed w-8 h-8 rounded-full border-2 border-[#E6DDC4]/30 pointer-events-none z-[9999] transition-colors duration-200"
-        style={{ transform: 'translate(-50%, -50%)' }}
+        ref={ringRef}
+        className="custom-cursor"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          border: '1.5px solid rgba(0,212,255,0.5)',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          zIndex: 10000,
+        }}
       />
     </>
   );
 };
 
 export default CustomCursor;
-

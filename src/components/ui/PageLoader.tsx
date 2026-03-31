@@ -1,146 +1,125 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 
 const PageLoader: FC = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [done, setDone] = useState(false);
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Simulate loading progress
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + Math.random() * 15;
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        const next = prev + Math.random() * 18;
+        return next >= 100 ? 100 : next;
       });
-    }, 100);
+    }, 80);
 
-    // Minimum loading time for smooth experience
-    const minLoadTime = setTimeout(() => {
-      setIsLoading(false);
-      clearInterval(progressInterval);
-    }, 1500);
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+      setProgress(100);
 
-    // Cleanup
+      // Cinematic slide-up exit
+      if (loaderRef.current) {
+        gsap.to(loaderRef.current, {
+          y: '-100%',
+          duration: 0.9,
+          ease: 'power4.inOut',
+          delay: 0.3,
+          onComplete: () => setDone(true),
+        });
+      }
+    }, 1800);
+
     return () => {
-      clearInterval(progressInterval);
-      clearTimeout(minLoadTime);
+      clearInterval(interval);
+      clearTimeout(timeout);
     };
   }, []);
 
   useEffect(() => {
-    if (!isLoading) {
-      // Animate loader out
-      gsap.to('.page-loader', {
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.inOut',
-        onComplete: () => {
-          const loader = document.querySelector('.page-loader');
-          if (loader) {
-            loader.remove();
-          }
-        },
+    if (barRef.current) {
+      gsap.to(barRef.current, {
+        width: `${Math.min(progress, 100)}%`,
+        duration: 0.25,
+        ease: 'power1.out',
       });
     }
-  }, [isLoading]);
-
-  useEffect(() => {
-    // Animate progress bar
-    gsap.to('.loader-progress-bar', {
-      width: `${Math.min(progress, 100)}%`,
-      duration: 0.3,
-      ease: 'power1.out',
-    });
   }, [progress]);
 
-  if (!isLoading && progress >= 100) {
-    return null;
-  }
+  if (done) return null;
 
   return (
-    <div className="page-loader fixed inset-0 z-[9999] bg-[#181D31] flex items-center justify-center">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#678983]/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#E6DDC4]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
+    <div
+      ref={loaderRef}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
+      style={{ backgroundColor: 'var(--bg-void)' }}
+    >
+      {/* Background glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 40%, rgba(0,212,255,0.06) 0%, transparent 65%)',
+        }}
+      />
 
-      {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center space-y-8">
-        {/* Logo/Name */}
-        <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#E6DDC4] mb-2">
-            Kenil Sangani
-          </h1>
-          <p className="text-[#E6DDC4]/60 text-sm sm:text-base font-medium">
-            Co-founder of CreativityCoder
-          </p>
-        </div>
+      {/* Main content */}
+      <div className="relative z-10 flex flex-col items-center gap-8">
+        {/* Logo */}
+        <h1
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'clamp(4rem, 12vw, 8rem)',
+            lineHeight: 1,
+            color: 'var(--text-primary)',
+            letterSpacing: '0.06em',
+          }}
+        >
+          KENIL
+          <span style={{ color: 'var(--accent-cyan)' }}>.</span>
+        </h1>
 
-        {/* Animated Spinner */}
-        <div className="relative">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-[#E6DDC4]/10 rounded-full">
-            <div className="absolute inset-0 border-4 border-transparent border-t-[#678983] rounded-full animate-spin" style={{ animationDuration: '1s' }} />
-            <div className="absolute inset-0 border-4 border-transparent border-r-[#E6DDC4] rounded-full animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
-            <div className="absolute inset-2 border-4 border-transparent border-b-[#F0E9D2] rounded-full animate-spin" style={{ animationDuration: '2s' }} />
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-64 sm:w-80 max-w-full px-4">
-          <div className="h-1 bg-[#E6DDC4]/10 rounded-full overflow-hidden">
+        {/* Progress bar */}
+        <div style={{ width: '192px' }}>
+          <div
+            style={{
+              width: '192px',
+              height: '2px',
+              background: 'rgba(100,200,255,0.1)',
+              borderRadius: '9999px',
+              overflow: 'hidden',
+            }}
+          >
             <div
-              className="loader-progress-bar h-full bg-[#F0E9D2] rounded-full transition-all duration-300"
-              style={{ width: '0%' }}
+              ref={barRef}
+              style={{
+                width: '0%',
+                height: '100%',
+                borderRadius: '9999px',
+                background: 'linear-gradient(to right, rgba(0,212,255,0.5), var(--accent-cyan))',
+                boxShadow: '0 0 8px rgba(0,212,255,0.6)',
+                transition: 'none',
+              }}
             />
           </div>
-          <p className="text-[#E6DDC4]/40 text-xs text-center mt-2 font-medium">
-            {Math.round(Math.min(progress, 100))}%
-          </p>
         </div>
 
-        {/* Loading Text */}
-        <div className="text-center">
-          <p className="text-[#E6DDC4]/50 text-sm font-medium animate-pulse">
-            Loading amazing content...
-          </p>
-        </div>
+        {/* Loading label */}
+        <p
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.65rem',
+            letterSpacing: '0.25em',
+            textTransform: 'uppercase',
+            color: 'var(--text-dim)',
+          }}
+        >
+          Loading experience...
+        </p>
       </div>
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-[#E6DDC4]/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `float ${3 + Math.random() * 2}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0) translateX(0);
-            opacity: 0.2;
-          }
-          50% {
-            transform: translateY(-20px) translateX(10px);
-            opacity: 0.6;
-          }
-        }
-      `}</style>
     </div>
   );
 };
 
 export default PageLoader;
-

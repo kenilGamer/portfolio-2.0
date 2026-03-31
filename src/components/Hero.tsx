@@ -1,180 +1,309 @@
-import { FC, useRef } from 'react';
+import { FC, useRef, lazy, Suspense } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import MagneticButton from './ui/MagneticButton';
 
+const HeroSphere = lazy(() => import('./3D/HeroSphere'));
+
 interface HeroProps {
   scrollToSection: (id: string) => void;
 }
 
+const hudBadges = [
+  { label: 'THREE.JS',     top: '12%', left: '8%',  delay: 0 },
+  { label: 'GSAP · MOTION',top: '70%', left: '5%',  delay: 0.3 },
+  { label: 'R3F CANVAS',   top: '20%', right: '6%', delay: 0.6 },
+  { label: 'REACT · TS',   top: '78%', right: '8%', delay: 0.15 },
+];
+
 const Hero: FC<HeroProps> = ({ scrollToSection }) => {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef      = useRef<HTMLDivElement>(null);
+  const textColRef   = useRef<HTMLDivElement>(null);
+  const headlineRef  = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText);
 
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 2.2 });
 
-    // Animate main heading
-    setTimeout(() => {
-      const heading = document.querySelector('.hero-title');
-      if (heading) {
-        const split = new SplitText(heading, { type: 'chars' });
-        
-        split.chars.forEach((char) => {
-          const charEl = char as HTMLElement;
-          charEl.style.display = 'inline-block';
-        });
+      // Badges stagger
+      tl.fromTo('.hero-badge', { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.12, duration: 0.6 }, 0);
 
-        gsap.from(split.chars, {
-          opacity: 0,
-          y: 50,
-          rotationX: -90,
-          delay: 1.5,
-          stagger: 0.03,
-          duration: 0.8,
-          ease: 'back.out(1.7)',
+      // Headline: per-word, each word's chars rotate from -90° on X
+      const words = headlineRef.current?.querySelectorAll('.hero-word');
+      if (words) {
+        words.forEach((word, wi) => {
+          const split = new SplitText(word, { type: 'chars' });
+          split.chars.forEach(c => ((c as HTMLElement).style.display = 'inline-block'));
+          tl.fromTo(
+            split.chars,
+            { opacity: 0, rotationX: -90, transformOrigin: '50% 100%' },
+            { opacity: 1, rotationX: 0, stagger: 0.025, duration: 0.7, ease: 'back.out(1.5)' },
+            wi * 0.12
+          );
         });
       }
-    }, 100);
 
-    // Animate other elements
-    const description = document.querySelector('.hero-description');
-    const buttons = document.querySelectorAll('.hero-buttons > *');
-    
-    if (description) {
-      tl.from('.hero-description', {
-        opacity: 0,
-        y: 20,
-        duration: 0.8,
-      }, '-=0.6');
-    }
-    
-    if (buttons.length > 0) {
-      tl.from('.hero-buttons > *', {
-        opacity: 0,
-        y: 30,
-        scale: 0.9,
-        stagger: 0.1,
-        duration: 0.6,
-      }, '-=0.4');
-    }
+      // Sub-headline
+      tl.fromTo('.hero-sub', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7 }, '-=0.3');
 
-    // Parallax on scroll
-    ScrollTrigger.create({
-      trigger: heroRef.current,
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 1,
-      onUpdate: (self) => {
-        if (containerRef.current) {
-          gsap.to(containerRef.current, {
-            y: self.progress * 50,
-            opacity: 1 - self.progress * 0.5,
+      // Buttons
+      tl.fromTo('.hero-btn', { opacity: 0, y: 20, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, stagger: 0.1, duration: 0.6 }, '-=0.4');
+
+      // Stats row
+      tl.fromTo('.hero-stat', { opacity: 0, y: 24 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.6 }, '-=0.3');
+
+      // HUD badges — float in
+      tl.fromTo('.hud-float-badge', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, stagger: 0.15, duration: 0.5 }, '-=0.5');
+
+      // Scroll indicator
+      tl.fromTo('.scroll-indicator', { opacity: 0 }, { opacity: 1, duration: 0.6 }, '-=0.2');
+
+      // Parallax on scroll
+      ScrollTrigger.create({
+        trigger: heroRef.current,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1,
+        onUpdate: (self) => {
+          gsap.to(textColRef.current, {
+            y: self.progress * 60,
+            opacity: 1 - self.progress * 0.6,
             duration: 0.3,
           });
-        }
-      },
-    });
+        },
+      });
+    }, heroRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
     <div
       ref={heroRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen overflow-hidden"
+      style={{ paddingTop: '80px' }}
     >
-      {/* Background gradient orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-[#678983]/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-[#E6DDC4]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
+      {/* Desktop: 2 columns | Mobile: single column */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(480px, 100%), 1fr))',
+          alignItems: 'center',
+          minHeight: 'calc(100vh - 80px)',
+          padding: '4rem 2.5rem 2rem',
+          gap: '2rem',
+          maxWidth: '1400px',
+          margin: '0 auto',
+        }}
+      >
+        {/* ---- LEFT: Text content ---- */}
+        <div ref={textColRef} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
-      {/* Main content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div
-          ref={containerRef}
-          className="max-w-4xl mx-auto text-center space-y-8"
-        >
-       
-
-          {/* Main title */}
-          <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tight text-[#E6DDC4]">
-            Crafting Beautiful
-            <br />
-            Digital Experiences
-          </h1>
-
-          {/* Description */}
-          <div className="hero-description space-y-4 max-w-2xl mx-auto">
-            <p className="text-lg sm:text-xl md:text-2xl text-[#E6DDC4]/95 leading-relaxed font-light">
-              Building modern, responsive, and interactive web applications with{' '}
-              <span className="text-[#E6DDC4] font-semibold">
-                React, TypeScript, and Next.js
-              </span>
-            </p>
-            <p className="text-base sm:text-lg text-[#E6DDC4]/80 leading-relaxed font-light">
-              Specializing in elegant UI/UX design, blazing-fast performance optimization,
-              and creating intuitive, pixel-perfect user interfaces
-            </p>
+          {/* Availability badges */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+            <span className="hero-badge" style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+              fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '0.1em',
+              padding: '0.35rem 0.9rem', borderRadius: '9999px',
+              border: '1px solid rgba(34,197,94,0.3)',
+              color: 'var(--accent-green)',
+              background: 'rgba(34,197,94,0.06)',
+            }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-green)', boxShadow: '0 0 6px var(--accent-green)', animation: 'float 2s ease-in-out infinite' }} />
+              Available for work
+            </span>
+            <span className="hero-badge" style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+              fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '0.1em',
+              padding: '0.35rem 0.9rem', borderRadius: '9999px',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-muted)',
+              background: 'rgba(13,18,37,0.4)',
+            }}>
+              India · Remote
+            </span>
           </div>
+
+          {/* Headline: 4 words stacked */}
+          <div ref={headlineRef} className="perspective-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 0.92 }}>
+            {['Crafting', 'Beautiful', 'Digital', 'Experiences'].map(word => (
+              <div key={word} className="hero-word" style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(3.8rem, 8.5vw, 9rem)',
+                color: 'var(--text-primary)',
+                letterSpacing: '0.02em',
+                overflow: 'hidden',
+              }}>
+                {word}
+              </div>
+            ))}
+          </div>
+
+          {/* Sub-headline */}
+          <p className="hero-sub" style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
+            color: 'var(--text-muted)',
+            maxWidth: '480px',
+            lineHeight: 1.7,
+          }}>
+            Building modern web experiences with{' '}
+            <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>React</span>,{' '}
+            <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>TypeScript</span> &{' '}
+            <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>Next.js</span>{' '}
+            — where precision engineering meets creative design.
+          </p>
 
           {/* CTA Buttons */}
-          <div className="hero-buttons flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
             <MagneticButton
               onClick={() => scrollToSection('projects')}
-              className="group relative px-8 py-4 bg-[#F0E9D2] text-[#181D31] rounded-full text-base font-bold hover:bg-[#F0E9D2]/90 hover:shadow-2xl hover:shadow-[#F0E9D2]/30 transition-all duration-300 overflow-hidden"
-              magneticStrength={0.4}
-              rippleColor="rgba(24, 29, 49, 0.1)"
+              className="hero-btn shimmer-btn"
+              magneticStrength={0.35}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                padding: '0.85rem 2rem',
+                borderRadius: '9999px',
+                background: 'var(--accent-cyan)',
+                color: 'var(--bg-void)',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 0 24px rgba(0,212,255,0.3)',
+                display: 'flex', alignItems: 'center', gap: '0.5rem',
+              }}
             >
-              <span className="relative flex items-center gap-2 z-10">
-                View My Work
-                <svg
-                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
+              View My Work <span style={{ fontSize: '1rem' }}>→</span>
             </MagneticButton>
-
             <MagneticButton
               onClick={() => scrollToSection('contact')}
-              className="group relative px-8 py-4 border-2 border-[#E6DDC4]/30 text-[#E6DDC4] rounded-full text-base font-bold hover:bg-[#678983]/20 hover:border-[#E6DDC4]/50 hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
-              magneticStrength={0.4}
-              rippleColor="rgba(230, 221, 196, 0.4)"
+              className="hero-btn"
+              magneticStrength={0.35}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                padding: '0.85rem 2rem',
+                borderRadius: '9999px',
+                background: 'transparent',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-subtle)',
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                transition: 'border-color 0.3s',
+              }}
             >
-              <span className="flex items-center gap-2">
-                Get in Touch
-                <svg
-                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4m0 0l6-6m-6 6l6 6" />
-                </svg>
-              </span>
+              <span style={{ fontSize: '1rem' }}>←</span> Get in Touch
             </MagneticButton>
           </div>
+
+          {/* Stats row */}
+          <div style={{
+            borderTop: '1px solid var(--border-subtle)',
+            paddingTop: '1.5rem',
+            display: 'flex',
+            gap: '2.5rem',
+            flexWrap: 'wrap',
+          }}>
+            {[
+              { value: '50+', label: 'Projects' },
+              { value: '3+',  label: 'Years'    },
+              { value: '100%',label: 'Satisfaction' },
+            ].map(stat => (
+              <div key={stat.label} className="hero-stat">
+                <div style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1,
+                }}>
+                  {stat.value}
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.6rem',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-muted)',
+                  marginTop: '0.3rem',
+                }}>
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ---- RIGHT: 3D Sphere (hidden on small) ---- */}
+        <div
+          className="hidden lg:block"
+          style={{ position: 'relative', height: '560px' }}
+        >
+          <Suspense fallback={null}>
+            <HeroSphere />
+          </Suspense>
+
+          {/* Floating HUD Badges */}
+          {hudBadges.map(b => (
+            <div
+              key={b.label}
+              className="hud-badge hud-float-badge animate-float"
+              style={{
+                position: 'absolute',
+                top: b.top,
+                left: (b as any).left,
+                right: (b as any).right,
+                animationDelay: `${b.delay}s`,
+                opacity: 0,
+              }}
+            >
+              {b.label}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-        <button
-          onClick={() => scrollToSection('about')}
-          className="group flex flex-col items-center gap-2 text-[#E6DDC4]/70 hover:text-[#E6DDC4] transition-colors duration-300"
-        >
-          <span className="text-xs uppercase tracking-wider font-medium">Scroll</span>
-          <div className="w-6 h-10 border-2 border-[#E6DDC4]/40 rounded-full flex items-start justify-center p-2 group-hover:border-[#E6DDC4]/80 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-[#E6DDC4]/20">
-            <div className="w-1.5 h-1.5 bg-[#E6DDC4] rounded-full animate-bounce" />
-          </div>
-        </button>
+      <div
+        className="scroll-indicator"
+        style={{
+          position: 'absolute',
+          bottom: '2rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.5rem',
+          opacity: 0,
+          cursor: 'pointer',
+        }}
+        onClick={() => scrollToSection('about')}
+      >
+        <span style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.6rem',
+          letterSpacing: '0.25em',
+          textTransform: 'uppercase',
+          color: 'var(--text-dim)',
+        }}>
+          Scroll
+        </span>
+        <div style={{
+          width: '1px',
+          height: '48px',
+          background: 'linear-gradient(to bottom, var(--accent-cyan), transparent)',
+          animation: 'float 2s ease-in-out infinite',
+        }} />
       </div>
     </div>
   );
