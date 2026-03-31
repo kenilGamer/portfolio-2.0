@@ -1,54 +1,87 @@
-# React + TypeScript + Vite
+(The file `d:\dev\portfolio-2.0\README.md` exists, but is empty)
+# Portfolio 2.0
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An advanced, interactive developer portfolio built with React, TypeScript, Vite, and GSAP. Showcases modern web development, 3D/GSAP animation, and a professional project gallery.
 
-Currently, two official plugins are available:
+## 🚀 Features
+- Animated hero, about, and section transitions (GSAP, SplitText)
+- 3D/Parallax cards and effects (Three.js, custom components)
+- Responsive design (Tailwind CSS)
+- Project gallery with live links and GitHub
+- Contact form (EmailJS integration)
+- Testimonials, skills, and services sections
+- Custom UI elements: MagneticButton, TiltCard, CustomCursor, PageLoader, and more
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Tech Stack
+- **Frontend:** React, TypeScript, Vite
+- **Styling:** Tailwind CSS, custom CSS
+- **Animation:** GSAP, Framer Motion, Three.js
+- **Email:** EmailJS
+- **Other:** Locomotive Scroll, custom hooks, modular components
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 📁 Folder Structure
+```
+src/
+  App.tsx           # Main app logic, GSAP plugin registration
+  main.tsx          # Entry point
+  index.css         # Global styles (Tailwind, custom)
+  components/       # All UI and section components
+	 3DCard.tsx      # 3D card effect
+	 About.tsx       # About section (animated)
+	 Contact.tsx     # Contact form (EmailJS)
+	 Footer.tsx      # Footer with 3D/hover effects
+	 Galaxy.css      # Galaxy background styles
+	 Header.tsx      # Sticky/animated header
+	 Hero.tsx        # Hero section (animated)
+	 LiquidEther.tsx # Custom Three.js effect
+	 Projects.tsx    # Project gallery
+	 Services.tsx    # Services cards
+	 Skills.tsx      # Skills with progress
+	 Testimonials.tsx # Client testimonials
+	 TrueFocus.tsx   # Animated text focus effect
+	 ui/             # Reusable UI (MagneticButton, TiltCard, etc)
+  assets/           # Static assets (e.g., react.svg)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🧩 Main Components
+- **App.tsx:** Registers all GSAP plugins, renders all sections, manages global effects.
+- **Header/Hero/About/Skills/Services/Projects/Contact/Testimonials/Footer:** Each is a modular, animated section.
+- **Projects.tsx:**
+  - Example projects:
+	 - **E-commerce Platform:** Next.js, TypeScript, MongoDB ([Live](https://whitezone.vercel.app/), [GitHub](https://github.com/kenilGamer/whitezone))
+	 - **3D Product Viewer:** Three.js, WebGL ([Live](https://amaya.godcraft.fun/), [GitHub](https://github.com/kenilGamer/Amaya))
+	 - **AI-Powered Dashboard:** React, Node.js, TensorFlow ([Live](https://ai.godcraft.fun/), [GitHub](https://github.com/kenilGamer/AI-Image-Enhancer))
+	 - **Movie Website:** React, Node.js, MongoDB ([Live](https://movies.godcraft.fun/), [GitHub](https://github.com/kenilGamer/Movies-app))
+- **Contact.tsx:** EmailJS-powered contact form.
+- **Skills.tsx:** Animated skill bars for frontend, backend, 3D, and tools.
+- **Testimonials.tsx:** Client/company testimonials with images.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📦 Installation & Usage
+1. **Clone the repo:**
+	```sh
+	git clone https://github.com/your-username/portfolio-2.0.git
+	cd portfolio-2.0
+	```
+2. **Install dependencies:**
+	```sh
+	npm install
+	# or
+	yarn install
+	```
+3. **Run locally:**
+	```sh
+	npm run dev
+	# or
+	yarn dev
+	```
+4. **Build for production:**
+	```sh
+	npm run build
+	```
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## ✨ Credits
+- [GSAP](https://greensock.com/gsap/), [Three.js](https://threejs.org/), [Framer Motion](https://www.framer.com/motion/), [Tailwind CSS](https://tailwindcss.com/), [EmailJS](https://www.emailjs.com/)
+- Inspired by modern interactive portfolios and creative web design trends.
+
+---
+_Built and designed by kenil Sagani._
