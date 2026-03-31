@@ -67,7 +67,7 @@ const Skills: FC = () => {
 
       // Skill bars fill on scroll
       categories.forEach((cat, ci) => {
-        cat.skills.forEach((skill, si) => {
+        cat.skills.forEach((_skill, si) => {
           const barEl = document.querySelector(`[data-bar="${ci}-${si}"]`);
           if (barEl) {
             gsap.fromTo(barEl,

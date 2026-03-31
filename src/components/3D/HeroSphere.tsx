@@ -75,7 +75,7 @@ function WireCage() {
     if (!ref.current) return;
     const t = clock.elapsedTime;
     ref.current.rotation.y = -t * 0.05;
-    ref.current.rotation.x =  t * 0.03;
+    ref.current.rotation.x = t * 0.03;
   });
   return (
     <mesh ref={ref}>
@@ -149,7 +149,7 @@ function DustRing({ radius, count, color }: { radius: number; count: number; col
     for (let i = 0; i < count; i++) {
       const a = (i / count) * Math.PI * 2;
       const r = radius + (Math.random() - 0.5) * 0.25;
-      arr[i * 3]     = Math.cos(a) * r;
+      arr[i * 3] = Math.cos(a) * r;
       arr[i * 3 + 1] = (Math.random() - 0.5) * 0.18;
       arr[i * 3 + 2] = Math.sin(a) * r;
     }
@@ -178,10 +178,10 @@ const HeroSphere = () => (
   >
     {/* Lighting */}
     <ambientLight intensity={0.08} />
-    <pointLight position={[3,  3,  3]}  color="#00D4FF" intensity={16} distance={18} decay={2} />
-    <pointLight position={[-3, -2,  2]} color="#F59E0B" intensity={9}  distance={14} decay={2} />
-    <pointLight position={[0,  0,  4]}  color="#ffffff"  intensity={1}  distance={10} decay={2} />
-    <pointLight position={[-1, 3, -2]}  color="#A78BFA" intensity={6}  distance={12} decay={2} />
+    <pointLight position={[3, 3, 3]} color="#00D4FF" intensity={16} distance={18} decay={2} />
+    <pointLight position={[-3, -2, 2]} color="#F59E0B" intensity={9} distance={14} decay={2} />
+    <pointLight position={[0, 0, 4]} color="#ffffff" intensity={1} distance={10} decay={2} />
+    <pointLight position={[-1, 3, -2]} color="#A78BFA" intensity={6} distance={12} decay={2} />
 
     {/* Core — minimal float to avoid drift */}
     <Float speed={1.4} rotationIntensity={0.12} floatIntensity={0.3}>
@@ -192,12 +192,12 @@ const HeroSphere = () => (
     </Float>
 
     {/* Rings — all radii ≤ 1.75 so they stay in-frame at fov 44, z=4.6 */}
-    <Ring radius={1.36} tube={0.010} color="#00D4FF" opacity={0.95} tilt={[0.45,  0,  0.18]} speed={ 0.42} />
-    <Ring radius={1.58} tube={0.008} color="#F59E0B" opacity={0.75} tilt={[1.05,  0, -0.32]} speed={-0.28} />
-    <Ring radius={1.78} tube={0.005} color="#A78BFA" opacity={0.50} tilt={[0.2,   0,  1.05]} speed={ 0.16} />
+    <Ring radius={1.36} tube={0.010} color="#00D4FF" opacity={0.95} tilt={[0.45, 0, 0.18]} speed={0.42} />
+    <Ring radius={1.58} tube={0.008} color="#F59E0B" opacity={0.75} tilt={[1.05, 0, -0.32]} speed={-0.28} />
+    <Ring radius={1.78} tube={0.005} color="#A78BFA" opacity={0.50} tilt={[0.2, 0, 1.05]} speed={0.16} />
 
     {/* Orbiting nodes */}
-    <GlowNodes count={6} radius={1.37} color="#00D4FF" speed={ 0.42} />
+    <GlowNodes count={6} radius={1.37} color="#00D4FF" speed={0.42} />
     <GlowNodes count={4} radius={1.59} color="#F59E0B" speed={-0.28} />
 
     {/* Particle belts */}
