@@ -92,7 +92,7 @@ const About: FC<AboutProps> = () => {
                 }}
               >
                 <img
-                  src="/DSC_0116.png"
+                  src="/1000068353-Picsart-AiImageEnhancer.jpg-Photoroom.jpeg"
                   alt="Kenil Sangani — Full-Stack Developer"
                   style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
                 />

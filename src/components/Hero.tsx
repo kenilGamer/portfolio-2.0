@@ -12,16 +12,16 @@ interface HeroProps {
 }
 
 const hudBadges = [
-  { label: 'THREE.JS',     top: '12%', left: '8%',  delay: 0 },
-  { label: 'GSAP · MOTION',top: '70%', left: '5%',  delay: 0.3 },
-  { label: 'R3F CANVAS',   top: '20%', right: '6%', delay: 0.6 },
-  { label: 'REACT · TS',   top: '78%', right: '8%', delay: 0.15 },
+  { label: 'THREE.JS', top: '12%', left: '8%', delay: 0 },
+  { label: 'GSAP · MOTION', top: '70%', left: '5%', delay: 0.3 },
+  { label: 'R3F CANVAS', top: '20%', right: '6%', delay: 0.6 },
+  { label: 'REACT · TS', top: '78%', right: '8%', delay: 0.15 },
 ];
 
 const Hero: FC<HeroProps> = ({ scrollToSection }) => {
-  const heroRef      = useRef<HTMLDivElement>(null);
-  const textColRef   = useRef<HTMLDivElement>(null);
-  const headlineRef  = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const textColRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -216,8 +216,8 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
           }}>
             {[
               { value: '50+', label: 'Projects' },
-              { value: '3+',  label: 'Years'    },
-              { value: '100%',label: 'Satisfaction' },
+              { value: '3+', label: 'Years' },
+              { value: '100%', label: 'Satisfaction' },
             ].map(stat => (
               <div key={stat.label} className="hero-stat">
                 <div style={{

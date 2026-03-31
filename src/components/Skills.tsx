@@ -11,6 +11,7 @@ const categories = [
     name: 'Frontend',
     color: '#00D4FF',
     cubeColor: '#0a1a2e',
+    accentColor: '#00D4FF',
     skills: [
       { name: 'React',       level: 95 },
       { name: 'Next.js',     level: 90 },
@@ -24,6 +25,7 @@ const categories = [
     name: 'Backend',
     color: '#F59E0B',
     cubeColor: '#1a1000',
+    accentColor: '#F59E0B',
     skills: [
       { name: 'Node.js',    level: 95 },
       { name: 'MongoDB',    level: 98 },
@@ -37,6 +39,7 @@ const categories = [
     name: 'Tooling & 3D',
     color: '#22C55E',
     cubeColor: '#001a0a',
+    accentColor: '#22C55E',
     skills: [
       { name: 'Three.js', level: 90 },
       { name: 'GSAP',     level: 88 },
@@ -143,9 +146,9 @@ const Skills: FC = () => {
                 {/* Mini 3D Cube */}
                 <div className="hidden md:block" style={{ opacity: 0.85 }}>
                   <Suspense fallback={
-                    <div style={{ width: 80, height: 80, border: '1px solid var(--border-subtle)', borderRadius: 8 }} />
+                    <div style={{ width: 88, height: 88, border: '1px solid var(--border-subtle)', borderRadius: 8 }} />
                   }>
-                    <SkillCube color={cat.cubeColor} />
+                    <SkillCube color={cat.cubeColor} accentColor={cat.accentColor} />
                   </Suspense>
                 </div>
               </div>
