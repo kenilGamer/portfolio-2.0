@@ -1,4 +1,4 @@
-import { FC, useMemo, useRef, lazy, Suspense } from 'react';
+import { FC, lazy, Suspense, useMemo, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '../lib/gsap';
 import MagneticButton from './ui/MagneticButton';
@@ -10,10 +10,10 @@ interface HeroProps {
 }
 
 const hudBadges = [
-  { label: 'THREE.JS', top: '12%', left: '8%', delay: 0 },
-  { label: 'GSAP · MOTION', top: '70%', left: '5%', delay: 0.3 },
-  { label: 'R3F CANVAS', top: '20%', right: '6%', delay: 0.6 },
-  { label: 'REACT · TS', top: '78%', right: '8%', delay: 0.15 },
+  { label: 'THREE.JS', positionClass: 'top-[12%] left-[8%]', delayClass: 'delay-0' },
+  { label: 'GSAP · MOTION', positionClass: 'top-[70%] left-[5%]', delayClass: 'delay-[300ms]' },
+  { label: 'R3F CANVAS', positionClass: 'top-[20%] right-[6%]', delayClass: 'delay-[600ms]' },
+  { label: 'REACT · TS', positionClass: 'top-[78%] right-[8%]', delayClass: 'delay-[150ms]' },
 ] as const;
 
 const Hero: FC<HeroProps> = ({ scrollToSection }) => {
@@ -21,10 +21,7 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
   const textLayerRef = useRef<HTMLDivElement>(null);
   const sphereLayerRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
-  const headlineWords = useMemo(
-    () => ['CRAFTING', 'BEAUTIFUL', 'DIGITAL', 'EXPERIENCES'],
-    []
-  );
+  const headlineWords = useMemo(() => ['CRAFTING', 'BEAUTIFUL', 'DIGITAL', 'EXPERIENCES'], []);
 
   useGSAP(() => {
     const ctx = gsap.context(() => {
@@ -36,20 +33,8 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
       if (chars?.length) {
         tl.fromTo(
           chars,
-          {
-            y: 100,
-            rotationX: -90,
-            opacity: 0,
-            transformOrigin: '50% 100%',
-          },
-          {
-            y: 0,
-            rotationX: 0,
-            opacity: 1,
-            stagger: 0.025,
-            duration: 0.85,
-            ease: 'power4.out',
-          },
+          { y: 100, rotationX: -90, opacity: 0, transformOrigin: '50% 100%' },
+          { y: 0, rotationX: 0, opacity: 1, stagger: 0.025, duration: 0.85, ease: 'power4.out' },
           0.4
         );
       }
@@ -66,74 +51,24 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
   }, []);
 
   return (
-    <div
-      ref={heroRef}
-      className="relative min-h-screen overflow-hidden"
-      style={{ paddingTop: '80px' }}
-    >
-      {/* Desktop: 2 columns | Mobile: single column */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1.06fr) minmax(0, 0.94fr)',
-          alignItems: 'start',
-          minHeight: 'calc(100vh - 80px)',
-          
-          gap: '0.75rem',
-          maxWidth: '1320px',
-          margin: '0 auto',
-        }}
-      >
-        {/* ---- LEFT: Text content ---- */}
-        <div ref={textLayerRef} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingTop: '0.5rem' }}>
-
-          {/* Availability badges */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
-            <span className="hero-badge" style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-              fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '0.1em',
-              padding: '0.35rem 0.9rem', borderRadius: '9999px',
-              border: '1px solid rgba(34,197,94,0.3)',
-              color: 'var(--accent-green)',
-              background: 'rgba(34,197,94,0.06)',
-            }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-green)', boxShadow: '0 0 6px var(--accent-green)', animation: 'float 2s ease-in-out infinite' }} />
+    <div ref={heroRef} className="relative min-h-screen overflow-hidden pt-[80px]">
+      <div className="mx-auto grid min-h-[calc(100vh-80px)] max-w-[1440px] grid-cols-1 items-start gap-3 px-6 lg:grid-cols-[1.14fr_0.86fr] lg:px-10">
+        <div ref={textLayerRef} className="flex flex-col gap-6 pt-2">
+          <div className="flex flex-wrap gap-2.5">
+            <span className="hero-badge inline-flex items-center gap-2 rounded-full border border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.06)] px-[0.9rem] py-[0.35rem] font-mono text-[0.65rem] tracking-[0.1em] text-[var(--accent-green)]">
+              <span className="h-[6px] w-[6px] rounded-full bg-[var(--accent-green)] shadow-[0_0_6px_var(--accent-green)] [animation:float_2s_ease-in-out_infinite]" />
               Available for work
             </span>
-            <span className="hero-badge" style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-              fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '0.1em',
-              padding: '0.35rem 0.9rem', borderRadius: '9999px',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-muted)',
-              background: 'rgba(13,18,37,0.4)',
-            }}>
+            <span className="hero-badge inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[rgba(13,18,37,0.4)] px-[0.9rem] py-[0.35rem] font-mono text-[0.65rem] tracking-[0.1em] text-[var(--text-muted)]">
               India · Remote
             </span>
           </div>
 
-          {/* Headline: 4 words stacked */}
-          <div ref={headlineRef} className="perspective-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 0.88 }}>
+          <div ref={headlineRef} className="perspective-text flex flex-col leading-[0.88]">
             {headlineWords.map((word) => (
-              <div key={word} className="hero-word" style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.4rem, 6.1vw, 7rem)',
-                fontWeight: 800,
-                color: 'var(--text-primary)',
-                letterSpacing: '0.02em',
-                textTransform: 'uppercase',
-                whiteSpace: 'nowrap',
-              }}>
+              <div key={word} className="hero-word whitespace-nowrap font-display text-[clamp(2.9rem,4.9vw,6rem)] font-extrabold uppercase tracking-[0.035em] text-[var(--text-primary)]">
                 {word.split('').map((char, index) => (
-                  <span
-                    key={`${word}-${index}`}
-                    className="hero-char"
-                    style={{
-                      display: 'inline-block',
-                      transformStyle: 'preserve-3d',
-                      willChange: 'transform, opacity',
-                    }}
-                  >
+                  <span key={`${word}-${index}`} className="hero-char inline-block [transform-style:preserve-3d] [will-change:transform,opacity]">
                     {char}
                   </span>
                 ))}
@@ -141,114 +76,44 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
             ))}
           </div>
 
-          {/* Sub-headline */}
-          <p className="hero-sub" style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)',
-            color: 'var(--text-muted)',
-            maxWidth: '480px',
-            lineHeight: 1.7,
-          }}>
+          <p className="hero-sub max-w-[480px] font-body text-[clamp(0.95rem,1.5vw,1.1rem)] leading-[1.7] text-[var(--text-muted)]">
             Building modern web experiences with{' '}
-            <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>React</span>,{' '}
-            <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>TypeScript</span> &{' '}
-            <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>Next.js</span>{' '}
+            <span className="font-medium text-[var(--accent-cyan)]">React</span>,{' '}
+            <span className="font-medium text-[var(--accent-cyan)]">TypeScript</span> &{' '}
+            <span className="font-medium text-[var(--accent-cyan)]">Next.js</span>{' '}
             through responsive architecture, cinematic motion, and product-grade craft.
           </p>
 
-          {/* CTA Buttons */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+          <div className="flex flex-wrap gap-4">
             <MagneticButton
               onClick={() => scrollToSection('projects')}
-              className="hero-btn shimmer-btn"
+              className="hero-btn shimmer-btn flex cursor-pointer items-center gap-2 rounded-full border-0 bg-[var(--accent-cyan)] px-8 py-[0.85rem] font-mono text-[0.75rem] font-semibold uppercase tracking-[0.15em] text-[var(--bg-void)] shadow-[0_0_24px_rgba(0,212,255,0.3)]"
               magneticStrength={0.35}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                padding: '0.85rem 2rem',
-                borderRadius: '9999px',
-                background: 'var(--accent-cyan)',
-                color: 'var(--bg-void)',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 0 24px rgba(0,212,255,0.3)',
-                display: 'flex', alignItems: 'center', gap: '0.5rem',
-              }}
             >
-              View My Work <span style={{ fontSize: '1rem' }}>→</span>
+              View My Work <span className="text-base">→</span>
             </MagneticButton>
             <MagneticButton
               onClick={() => scrollToSection('contact')}
-              className="hero-btn"
+              className="hero-btn flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-transparent px-8 py-[0.85rem] font-mono text-[0.75rem] font-semibold uppercase tracking-[0.15em] text-[var(--text-primary)] transition-colors"
               magneticStrength={0.35}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                padding: '0.85rem 2rem',
-                borderRadius: '9999px',
-                background: 'transparent',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-subtle)',
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: '0.5rem',
-                transition: 'border-color 0.3s',
-              }}
             >
-              <span style={{ fontSize: '1rem' }}>←</span> Get in Touch
+              <span className="text-base">←</span> Get in Touch
             </MagneticButton>
           </div>
 
-          {/* Stats row */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.5rem',
-          }}>
-            <div
-              className="hero-stats-divider"
-              style={{
-                width: '100%',
-                height: '1px',
-                background: 'linear-gradient(to right, rgba(100,200,255,0.45), transparent)',
-                transformOrigin: 'left center',
-              }}
-            />
-            <div style={{
-              display: 'flex',
-              gap: '2.5rem',
-              alignItems: 'flex-start',
-              justifyContent: 'flex-start',
-              width: '100%',
-              flexWrap: 'wrap',
-            }}>
+          <div className="flex flex-col gap-6">
+            <div className="hero-stats-divider h-px w-full origin-left bg-gradient-to-r from-[rgba(100,200,255,0.45)] to-transparent" />
+            <div className="flex w-full flex-wrap items-start justify-start gap-10">
               {[
                 { value: '50+', label: 'Projects Built' },
                 { value: '3+', label: 'Years Exp' },
                 { value: '100%', label: 'Client Satisfaction' },
-              ].map(stat => (
+              ].map((stat) => (
                 <div key={stat.label} className="hero-stat">
-                  <div style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
-                    color: 'var(--text-primary)',
-                    lineHeight: 1,
-                  }}>
+                  <div className="font-display text-[clamp(1.8rem,3vw,2.5rem)] leading-none text-[var(--text-primary)]">
                     {stat.value}
                   </div>
-                  <div style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.6rem',
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    color: 'var(--text-muted)',
-                    marginTop: '0.3rem',
-                  }}>
+                  <div className="mt-1.5 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">
                     {stat.label}
                   </div>
                 </div>
@@ -257,29 +122,15 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
           </div>
         </div>
 
-        {/* ---- RIGHT: 3D Sphere (hidden on mobile) ---- */}
-        <div
-          ref={sphereLayerRef}
-          className="hidden md:block"
-          style={{ position: 'relative', height: '560px' }}
-        >
+        <div ref={sphereLayerRef} className="relative hidden h-[560px] md:block">
           <Suspense fallback={null}>
             <HeroSphere />
           </Suspense>
 
-          {/* Floating HUD Badges */}
-          {hudBadges.map(b => (
+          {hudBadges.map((b) => (
             <div
               key={b.label}
-              className="hud-badge hud-float-badge animate-float"
-              style={{
-                position: 'absolute',
-                top: b.top,
-                left: 'left' in b ? b.left : undefined,
-                right: 'right' in b ? b.right : undefined,
-                animationDelay: `${b.delay}s`,
-                opacity: 0,
-              }}
+              className={`hud-badge hud-float-badge animate-float absolute ${b.positionClass} ${b.delayClass} opacity-0`}
             >
               {b.label}
             </div>
@@ -287,38 +138,12 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <div
-        className="scroll-indicator"
-        style={{
-          position: 'absolute',
-          bottom: '2rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '0.5rem',
-          opacity: 0,
-          cursor: 'pointer',
-        }}
+        className="scroll-indicator absolute bottom-8 left-1/2 flex -translate-x-1/2 cursor-pointer flex-col items-center gap-2 opacity-0"
         onClick={() => scrollToSection('about')}
       >
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.6rem',
-          letterSpacing: '0.25em',
-          textTransform: 'uppercase',
-          color: 'var(--text-dim)',
-        }}>
-          Scroll
-        </span>
-        <div style={{
-          width: '1px',
-          height: '48px',
-          background: 'linear-gradient(to bottom, var(--accent-cyan), transparent)',
-          animation: 'float 2s ease-in-out infinite',
-        }} />
+        <span className="font-mono text-[0.6rem] uppercase tracking-[0.25em] text-[var(--text-dim)]">Scroll</span>
+        <div className="h-12 w-px animate-[float_2s_ease-in-out_infinite] bg-gradient-to-b from-[var(--accent-cyan)] to-transparent" />
       </div>
     </div>
   );

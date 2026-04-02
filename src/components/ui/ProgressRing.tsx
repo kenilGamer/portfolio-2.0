@@ -41,8 +41,8 @@ const ProgressRing: FC<ProgressRingProps> = ({
   }, [percentage, circumference]);
 
   return (
-    <div ref={containerRef} className={`relative ${className}`} style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="transform -rotate-90">
+    <div ref={containerRef} className={`relative ${className} inline-block`}>
+      <svg width={size} height={size} className="-rotate-90 transform">
         {/* Background circle */}
         <circle
           cx={size / 2}

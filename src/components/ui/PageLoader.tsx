@@ -1,5 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { motion } from 'framer-motion';
 
 const PageLoader: FC = () => {
   const [progress, setProgress] = useState(0);
@@ -53,68 +54,35 @@ const PageLoader: FC = () => {
   return (
     <div
       ref={loaderRef}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
-      style={{ backgroundColor: 'var(--bg-void)' }}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[var(--bg-void)]"
     >
       {/* Background glow */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at 50% 40%, rgba(0,212,255,0.06) 0%, transparent 65%)',
-        }}
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(0,212,255,0.06)_0%,transparent_65%)]"
       />
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center gap-8">
         {/* Logo */}
-        <h1
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(4rem, 12vw, 8rem)',
-            lineHeight: 1,
-            color: 'var(--text-primary)',
-            letterSpacing: '0.06em',
-          }}
-        >
+        <h1 className="font-display text-[clamp(4rem,12vw,8rem)] leading-none tracking-[0.06em] text-[var(--text-primary)]">
           KENIL
-          <span style={{ color: 'var(--accent-cyan)' }}>.</span>
+          <span className="text-[var(--accent-cyan)]">.</span>
         </h1>
 
         {/* Progress bar */}
-        <div style={{ width: '192px' }}>
-          <div
-            style={{
-              width: '192px',
-              height: '2px',
-              background: 'rgba(100,200,255,0.1)',
-              borderRadius: '9999px',
-              overflow: 'hidden',
-            }}
-          >
-            <div
+        <div className="w-48">
+          <div className="h-[2px] w-48 overflow-hidden rounded-full bg-[rgba(100,200,255,0.1)]">
+            <motion.div
               ref={barRef}
-              style={{
-                width: '0%',
-                height: '100%',
-                borderRadius: '9999px',
-                background: 'linear-gradient(to right, rgba(0,212,255,0.5), var(--accent-cyan))',
-                boxShadow: '0 0 8px rgba(0,212,255,0.6)',
-                transition: 'none',
-              }}
+              className="h-full origin-left rounded-full bg-[linear-gradient(to_right,rgba(0,212,255,0.5),var(--accent-cyan))] shadow-[0_0_8px_rgba(0,212,255,0.6)]"
+              animate={{ scaleX: Math.min(progress, 100) / 100 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
             />
           </div>
         </div>
 
         {/* Loading label */}
-        <p
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.65rem',
-            letterSpacing: '0.25em',
-            textTransform: 'uppercase',
-            color: 'var(--text-dim)',
-          }}
-        >
+        <p className="font-mono text-[0.65rem] uppercase tracking-[0.25em] text-[var(--text-dim)]">
           Loading experience...
         </p>
       </div>

@@ -16,55 +16,28 @@ const Footer: FC<FooterProps> = ({ scrollToSection }) => {
   const year = new Date().getFullYear();
 
   return (
-    <footer style={{ position: 'relative', paddingTop: '2px' }}>
+    <footer className="relative pt-[2px]">
       {/* Gradient top line */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '1px',
-        background: 'linear-gradient(to right, var(--accent-cyan), rgba(0,212,255,0.1) 60%, transparent)',
-      }} />
+      <div className="absolute left-0 right-0 top-0 h-px bg-[linear-gradient(to_right,var(--accent-cyan),rgba(0,212,255,0.1)_60%,transparent)]" />
 
-      <div style={{
-        maxWidth: '1280px', margin: '0 auto', padding: '2rem 2.5rem',
-        display: 'flex', flexWrap: 'wrap',
-        alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem',
-      }}>
+      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-6 px-10 py-8">
         {/* Left: logo + copyright */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.1rem',
-            letterSpacing: '0.1em',
-            color: 'var(--text-primary)',
-          }}>
-            KENIL<span style={{ color: 'var(--accent-cyan)' }}>.</span>
+        <div className="flex items-center gap-4">
+          <span className="font-display text-[1.1rem] tracking-[0.1em] text-[var(--text-primary)]">
+            KENIL<span className="text-[var(--accent-cyan)]">.</span>
           </span>
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-            color: 'var(--text-dim)', letterSpacing: '0.1em',
-          }}>
+          <span className="font-mono text-[0.6rem] tracking-[0.1em] text-[var(--text-dim)]">
             © {year} All rights reserved.
           </span>
         </div>
 
         {/* Center: nav links */}
-        <nav style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+        <nav className="flex flex-wrap gap-1">
           {navLinks.map(link => (
             <button
               key={link.id}
               onClick={() => scrollToSection(link.id)}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.6rem',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: 'var(--text-dim)',
-                background: 'none', border: 'none',
-                padding: '0.3rem 0.6rem',
-                cursor: 'pointer',
-                transition: 'color 0.2s',
-              }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--accent-cyan)')}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--text-dim)')}
+              className="cursor-pointer border-0 bg-transparent px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-[var(--text-dim)] transition-colors hover:text-[var(--accent-cyan)]"
             >
               {link.label}
             </button>
@@ -72,11 +45,8 @@ const Footer: FC<FooterProps> = ({ scrollToSection }) => {
         </nav>
 
         {/* Right */}
-        <span style={{
-          fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
-          color: 'var(--text-dim)', letterSpacing: '0.08em',
-        }}>
-          Built with <span style={{ color: 'var(--accent-amber)' }}>♥</span> by Kenil Sangani
+        <span className="font-mono text-[0.6rem] tracking-[0.08em] text-[var(--text-dim)]">
+          Built with <span className="text-[var(--accent-amber)]">♥</span> by Kenil Sangani
         </span>
       </div>
     </footer>

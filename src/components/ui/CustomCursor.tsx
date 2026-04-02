@@ -108,37 +108,14 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
       <div
         ref={dotRef}
         className="custom-cursor"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '6px',
-          height: '6px',
-          borderRadius: '50%',
-          background: 'var(--accent-cyan)',
-          transform: 'translate(-50%, -50%)',
-          pointerEvents: 'none',
-          zIndex: 10001,
-          mixBlendMode: 'screen',
-        }}
+        className="custom-cursor fixed left-0 top-0 z-[10001] h-[6px] w-[6px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent-cyan)] pointer-events-none mix-blend-screen"
       />
 
       {/* Ring — 32px hollow, lagged */}
       <div
         ref={ringRef}
         className="custom-cursor"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
-          border: '1.5px solid rgba(0,212,255,0.5)',
-          transform: 'translate(-50%, -50%)',
-          pointerEvents: 'none',
-          zIndex: 10000,
-        }}
+        className="custom-cursor fixed left-0 top-0 z-[10000] h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(0,212,255,0.5)] pointer-events-none"
       />
     </>
   );

@@ -63,10 +63,9 @@ const TiltCard: FC<TiltCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className={`transform-gpu ${className}`}
+      className={`transform-gpu [transform-style:preserve-3d] ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ transformStyle: 'preserve-3d' }}
     >
       {children}
     </div>

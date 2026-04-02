@@ -95,65 +95,26 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
   return (
     <nav
       ref={headerRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-        opacity: 0, // GSAP will animate in
-        transition: 'background 0.5s ease, backdrop-filter 0.5s ease, border-bottom-color 0.5s ease',
-        background: isScrolled
-          ? 'rgba(4, 6, 15, 0.75)'
-          : 'transparent',
-        backdropFilter: isScrolled ? 'blur(20px)' : 'none',
-        WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'none',
-        borderBottom: isScrolled
-          ? '1px solid rgba(100,200,255,0.07)'
-          : '1px solid transparent',
-        boxShadow: isScrolled
-          ? '0 4px 32px rgba(0,0,0,0.4)'
-          : 'none',
-      }}
+      className={`fixed top-0 left-0 right-0 z-[1000] opacity-0 transition-[background,backdrop-filter,border-color,box-shadow] duration-500 ${
+        isScrolled
+          ? 'bg-[rgba(4,6,15,0.75)] backdrop-blur-[20px] border-b border-[rgba(100,200,255,0.07)] shadow-[0_4px_32px_rgba(0,0,0,0.4)]'
+          : 'bg-transparent border-b border-transparent'
+      }`}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2.5rem' }}>
+      <div className="flex items-center justify-between px-10 py-4">
 
         {/* Logo */}
         <button
           onClick={() => scrollToSection('hero')}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+          className="flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0"
         >
           {/* KS Badge */}
-          <div style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.7rem',
-            fontWeight: 600,
-            color: 'var(--accent-cyan)',
-            letterSpacing: '0.05em',
-            border: '1px solid rgba(0,212,255,0.2)',
-            transition: 'border-color 0.3s, box-shadow 0.3s',
-            position: 'relative',
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,212,255,0.7)';
-            (e.currentTarget as HTMLElement).style.boxShadow = '0 0 12px rgba(0,212,255,0.2)';
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,212,255,0.3)';
-            (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-          }}
-          >
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-md border border-[rgba(0,212,255,0.2)] font-mono text-[0.7rem] font-semibold tracking-[0.05em] text-[var(--accent-cyan)] transition-[border-color,box-shadow] hover:border-[rgba(0,212,255,0.7)] hover:shadow-[0_0_12px_rgba(0,212,255,0.2)]">
             <svg
               width="36"
               height="36"
               viewBox="0 0 36 36"
-              style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+              className="pointer-events-none absolute inset-0"
             >
               <rect
                 ref={logoBadgePathRef}
@@ -169,51 +130,25 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
             </svg>
             KS
           </div>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.4rem',
-            letterSpacing: '0.08em',
-            color: 'var(--text-primary)',
-          }}>
+          <span className="font-display text-[1.4rem] tracking-[0.08em] text-[var(--text-primary)]">
             KENIL
-            <span ref={logoDotRef} style={{ color: 'var(--accent-cyan)', display: 'inline-block' }}>
+            <span ref={logoDotRef} className="inline-block text-[var(--accent-cyan)]">
               .
             </span>
           </span>
         </button>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex" style={{ alignItems: 'center', gap: '0.25rem' }}>
+        <div className="hidden items-center gap-1 md:flex">
           {navItems.map(item => (
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              style={{
-                position: 'relative',
-                padding: '0.45rem 0.9rem',
-                paddingTop: activeSection === item.id ? 'calc(0.45rem - 2px)' : '0.45rem',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.65rem',
-                fontWeight: activeSection === item.id ? 600 : 500,
-                letterSpacing: '0.25em',
-                textTransform: 'uppercase',
-                color: activeSection === item.id ? 'var(--text-primary)' : 'var(--text-muted)',
-                background: 'transparent',
-                border: 'none',
-                borderTop: activeSection === item.id ? '2px solid var(--accent-cyan)' : '2px solid transparent',
-                textShadow: activeSection === item.id ? '0 0 10px rgba(0,212,255,0.35)' : 'none',
-                borderRadius: 0,
-                cursor: 'pointer',
-                transition: 'color 0.2s, border-top-color 0.2s, text-shadow 0.2s',
-              }}
-              onMouseEnter={e => {
-                if (activeSection !== item.id)
-                  (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)';
-              }}
-              onMouseLeave={e => {
-                if (activeSection !== item.id)
-                  (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)';
-              }}
+              className={`relative cursor-pointer border-0 border-t-2 bg-transparent px-[0.9rem] py-[0.45rem] font-mono text-[0.65rem] uppercase tracking-[0.25em] transition-[color,border-top-color,text-shadow] ${
+                activeSection === item.id
+                  ? 'border-t-[var(--accent-cyan)] font-semibold text-[var(--text-primary)] [text-shadow:0_0_10px_rgba(0,212,255,0.35)]'
+                  : 'border-t-transparent font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+              }`}
             >
               {item.label}
             </button>
@@ -221,62 +156,21 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
         </div>
 
         {/* CTA + Mobile toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="flex items-center gap-4">
           {/* Hire Me button — desktop (amber, availability dot) */}
           <button
-            className="hidden md:block shimmer-btn"
+            
             onClick={() => scrollToSection('contact')}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.65rem',
-              fontWeight: 600,
-              letterSpacing: '0.25em',
-              textTransform: 'uppercase',
-              color: 'var(--accent-amber)',
-              border: '1px solid rgba(245,158,11,0.35)',
-              borderRadius: '9999px',
-              padding: '0.5rem 1.5rem 0.5rem 1.1rem',
-              background: 'transparent',
-              cursor: 'pointer',
-              transition: 'border-color 0.3s, box-shadow 0.3s, background 0.3s',
-              display: 'flex', alignItems: 'center', gap: '0.5rem',
-              boxShadow: '0 0 10px rgba(245,158,11,0.15)',
-            }}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = 'rgba(245,158,11,0.7)';
-              el.style.boxShadow = '0 0 18px rgba(245,158,11,0.25)';
-              el.style.background = 'rgba(245,158,11,0.15)';
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = 'rgba(245,158,11,0.35)';
-              el.style.boxShadow = '0 0 10px rgba(245,158,11,0.15)';
-              el.style.background = 'transparent';
-            }}
+            className="hidden md:block shimmer-btn  items-center gap-2 rounded-full border border-[rgba(245,158,11,0.35)] bg-transparent px-[1.1rem] py-2 font-mono text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-[var(--accent-amber)] shadow-[0_0_10px_rgba(245,158,11,0.15)] transition-[border-color,box-shadow,background] hover:border-[rgba(245,158,11,0.7)] hover:bg-[rgba(245,158,11,0.15)] hover:shadow-[0_0_18px_rgba(245,158,11,0.25)]"
           >
-            <span style={{
-              width: '6px', height: '6px', borderRadius: '50%',
-              background: 'var(--accent-amber)',
-              boxShadow: '0 0 10px rgba(245,158,11,0.6)',
-              animation: 'pulse-dot 1.4s ease-in-out infinite',
-              flexShrink: 0,
-            }} />
+            <span className="h-[6px] w-[6px] shrink-0 animate-[pulse-dot_1.4s_ease-in-out_infinite] rounded-full bg-[var(--accent-amber)] shadow-[0_0_10px_rgba(245,158,11,0.6)]" />
             Hire Me
           </button>
 
           {/* Mobile menu toggle */}
           <button
-            className="md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            style={{
-              background: 'none',
-              border: '1px solid rgba(0,212,255,0.2)',
-              borderRadius: '6px',
-              padding: '0.4rem',
-              color: 'var(--text-muted)',
-              cursor: 'pointer',
-            }}
+            className=" md:hidden cursor-pointer rounded-md border border-[rgba(0,212,255,0.2)] bg-transparent p-1.5 text-[var(--text-muted)]"
           >
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -292,52 +186,20 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
       {isMobileMenuOpen && (
         <div
           ref={menuRef}
-          style={{
-            padding: '1rem 2.5rem 1.5rem',
-            background: 'rgba(4,6,15,0.95)',
-            backdropFilter: 'blur(20px)',
-            borderTop: '1px solid rgba(0,212,255,0.07)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-          }}
+          className="flex flex-col gap-2 border-t border-[rgba(0,212,255,0.07)] bg-[rgba(4,6,15,0.95)] px-10 py-4 backdrop-blur-[20px]"
         >
           {navItems.map(item => (
             <button
               key={item.id}
               onClick={() => { scrollToSection(item.id); setIsMobileMenuOpen(false); }}
-              style={{
-                textAlign: 'left',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.75rem',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: activeSection === item.id ? 'var(--accent-cyan)' : 'var(--text-muted)',
-                background: 'none',
-                border: 'none',
-                padding: '0.6rem 0',
-                cursor: 'pointer',
-                borderBottom: '1px solid rgba(100,200,255,0.04)',
-              }}
+              className={`cursor-pointer border-0 border-b border-[rgba(100,200,255,0.04)] bg-transparent py-[0.6rem] text-left font-mono text-[0.75rem] uppercase tracking-[0.2em] ${activeSection === item.id ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)]'}`}
             >
               {item.label}
             </button>
           ))}
           <button
             onClick={() => { scrollToSection('contact'); setIsMobileMenuOpen(false); }}
-            style={{
-              marginTop: '0.75rem',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.65rem',
-              letterSpacing: '0.25em',
-              textTransform: 'uppercase',
-              color: 'var(--accent-cyan)',
-              border: '1px solid rgba(0,212,255,0.3)',
-              borderRadius: '9999px',
-              padding: '0.6rem',
-              background: 'transparent',
-              cursor: 'pointer',
-            }}
+            className="mt-3 cursor-pointer rounded-full border border-[rgba(0,212,255,0.3)] bg-transparent p-[0.6rem] font-mono text-[0.65rem] uppercase tracking-[0.25em] text-[var(--accent-cyan)]"
           >
             Hire Me
           </button>

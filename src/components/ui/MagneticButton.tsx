@@ -4,20 +4,16 @@ import { gsap } from 'gsap';
 interface MagneticButtonProps {
   children: ReactNode;
   className?: string;
-  style?: React.CSSProperties;
   onClick?: (e?: MouseEvent<HTMLButtonElement>) => void;
   magneticStrength?: number;
-  rippleColor?: string;
   type?: 'button' | 'submit' | 'reset';
 }
 
 const MagneticButton: FC<MagneticButtonProps> = ({
   children,
   className = '',
-  style,
   onClick,
   magneticStrength = 0.3,
-  rippleColor = 'rgba(230, 221, 196, 0.5)',
   type = 'button',
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -95,7 +91,6 @@ const MagneticButton: FC<MagneticButtonProps> = ({
       ref={buttonRef}
       type={type}
       className={`relative overflow-hidden ${className}`}
-      style={style}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
@@ -103,11 +98,7 @@ const MagneticButton: FC<MagneticButtonProps> = ({
       <span className="relative z-10">{children}</span>
       <span
         ref={rippleRef}
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          background: `radial-gradient(circle, ${rippleColor} 0%, transparent 70%)`,
-          transform: 'translate(-50%, -50%)',
-        }}
+        className="pointer-events-none absolute left-0 top-0 rounded-full bg-[radial-gradient(circle,rgba(230,221,196,0.5)_0%,transparent_70%)] -translate-x-1/2 -translate-y-1/2"
       />
     </button>
   );

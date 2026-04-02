@@ -15,6 +15,7 @@ import { gsap, ScrollTrigger, ScrollSmoother, initGSAP } from "./lib/gsap";
 import CustomCursor from "./components/ui/CustomCursor";
 import ScrollToTop from "./components/ui/ScrollToTop";
 import PageLoader from "./components/ui/PageLoader";
+import { motion } from 'framer-motion';
 
 initGSAP();
 
@@ -51,8 +52,7 @@ const App: FC = () => {
   return (
     <div
       id="smooth-wrapper"
-      className="relative select-none overflow-x-hidden"
-      style={{ backgroundColor: 'var(--bg-void)' }}
+      className="relative select-none overflow-x-hidden bg-[var(--bg-void)]"
     >
       {/* Global atmosphere — grain, glows, grid, scan line */}
       <GlobalAtmosphere />
@@ -68,9 +68,10 @@ const App: FC = () => {
 
       {/* Scroll progress bar */}
       <div className="scroll-progress">
-        <div
+        <motion.div
           className="scroll-progress-bar"
-          style={{ width: `${scrollProgress * 100}%` }}
+          animate={{ scaleX: scrollProgress }}
+          transition={{ duration: 0.1, ease: 'linear' }}
         />
       </div>
 

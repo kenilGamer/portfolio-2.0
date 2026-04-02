@@ -27,16 +27,15 @@ const ScrollToTop: FC = () => {
   if (!isVisible) return null;
 
   return (
-    <MagneticButton
+    <button
       onClick={scrollToTop}
-      className="fixed bottom-8 right-8 z-50 w-14 h-14 rounded-full bg-[#F0E9D2] text-[#181D31] shadow-lg hover:bg-[#F0E9D2]/90 hover:shadow-[#F0E9D2]/30 transition-all duration-300 flex items-center justify-center"
-      magneticStrength={0.3}
-      rippleColor="rgba(24, 29, 49, 0.1)"
+      className="fixed bottom-2 right-3 z-50 w-14 h-14 rounded-full bg-[#F0E9D2] text-[#181D31] shadow-lg hover:bg-[#F0E9D2]/90 hover:shadow-[#F0E9D2]/30 transition-all duration-300 flex items-center justify-center"
+      
     >
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
       </svg>
-    </MagneticButton>
+    </button>
   );
 };
 

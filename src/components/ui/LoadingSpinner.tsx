@@ -17,7 +17,7 @@ const LoadingSpinner: FC<LoadingSpinnerProps> = ({ size = 'md', className = '' }
       <div
         className={`${sizeClasses[size]} border-4 border-[#E6DDC4]/10 border-t-[#E6DDC4] rounded-full animate-spin`}
       >
-        <div className="w-full h-full border-4 border-transparent border-t-[#E6DDC4]/50 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
+        <div className="h-full w-full animate-spin rounded-full border-4 border-transparent border-t-[#E6DDC4]/50 [animation-direction:reverse] [animation-duration:0.8s]" />
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
-import { FC, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
+import { FC, useRef } from 'react';
 import { gsap } from '../lib/gsap';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
@@ -12,6 +12,7 @@ const projects = [
     link: 'https://skateboard-one.vercel.app/',
     github: 'https://github.com/kenilGamer/Skateboard',
     accent: '#00D4FF',
+    accentClass: 'text-cyan-300 border-cyan-400/40 bg-cyan-400/10',
   },
   {
     title: '3D Product Viewer',
@@ -21,6 +22,7 @@ const projects = [
     link: 'https://amaya.godcraft.fun/',
     github: 'https://github.com/kenilGamer/Amaya',
     accent: '#F59E0B',
+    accentClass: 'text-amber-300 border-amber-400/40 bg-amber-400/10',
   },
   {
     title: 'AI-Powered Dashboard',
@@ -30,6 +32,7 @@ const projects = [
     link: 'https://ai.godcraft.fun/',
     github: 'https://github.com/kenilGamer/AI-Image-Enhancer',
     accent: '#22C55E',
+    accentClass: 'text-emerald-300 border-emerald-400/40 bg-emerald-400/10',
   },
   {
     title: 'Movie Streaming App',
@@ -39,8 +42,9 @@ const projects = [
     link: 'https://movies.godcraft.fun/',
     github: 'https://github.com/kenilGamer/Movies-app',
     accent: '#A78BFA',
+    accentClass: 'text-violet-300 border-violet-400/40 bg-violet-400/10',
   },
-];
+] as const;
 
 const Projects: FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -57,12 +61,13 @@ const Projects: FC = () => {
       gsap.set('.project-overlay-action', { opacity: 0, y: -8 });
       gsap.set('.project-tag', { opacity: 0.9 });
     }, sectionRef);
+
     return () => ctx.revert();
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
-    const rect  = card.getBoundingClientRect();
+    const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const rotY = ((x - rect.width / 2) / rect.width) * 20;
@@ -98,15 +103,8 @@ const Projects: FC = () => {
     const tags = card.querySelectorAll('.project-tag');
 
     gsap.to(overlay, { opacity: 0.45, duration: 0.35, ease: 'power2.out' });
-    gsap.to(actions, {
-      opacity: 1,
-      y: 0,
-      duration: 0.32,
-      stagger: 0.1,
-      ease: 'power3.out',
-    });
+    gsap.to(actions, { opacity: 1, y: 0, duration: 0.32, stagger: 0.1, ease: 'power3.out' });
     gsap.to(tags, {
-      color: accent,
       borderColor: `${accent}66`,
       backgroundColor: `${accent}12`,
       duration: 0.25,
@@ -128,15 +126,8 @@ const Projects: FC = () => {
     const tags = card.querySelectorAll('.project-tag');
 
     gsap.to(overlay, { opacity: 0.7, duration: 0.3, ease: 'power2.out' });
-    gsap.to(actions, {
-      opacity: 0,
-      y: -8,
-      duration: 0.24,
-      stagger: 0.05,
-      ease: 'power2.inOut',
-    });
+    gsap.to(actions, { opacity: 0, y: -8, duration: 0.24, stagger: 0.05, ease: 'power2.inOut' });
     gsap.to(tags, {
-      color: 'var(--text-muted)',
       borderColor: 'var(--border-subtle)',
       backgroundColor: 'rgba(15, 22, 48, 0.6)',
       duration: 0.2,
@@ -146,161 +137,74 @@ const Projects: FC = () => {
   };
 
   return (
-    <section ref={sectionRef} style={{ padding: '8rem 0', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 2.5rem' }}>
-
-        {/* Section label */}
+    <section ref={sectionRef} className="relative overflow-hidden py-32">
+      <div className="mx-auto max-w-[1280px] px-10">
         <div className="section-label">05 / Projects</div>
 
-        {/* Heading */}
-        <h2 style={{
-          fontFamily: 'var(--font-serif)',
-          fontSize: 'clamp(2rem, 4vw, 3rem)',
-          fontWeight: 700,
-          letterSpacing: '0.03em',
-          color: 'var(--text-primary)',
-          marginBottom: '3rem',
-        }}>
+        <h2 className="mb-12 font-serif text-[clamp(2rem,4vw,3rem)] font-bold tracking-[-0.03em] text-[var(--text-primary)]">
           Featured work.
         </h2>
 
-        {/* 2-column grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(380px, 100%), 1fr))',
-          gap: '1.75rem',
-        }}>
+        <div className="grid gap-7 sm:grid-cols-1 lg:grid-cols-2">
           {projects.map((project, i) => (
             <div
               key={i}
-              className="project-tilt-card"
+              className="project-tilt-card group relative overflow-hidden rounded-[14px] border border-[var(--border-subtle)] bg-[var(--bg-surface)] [transform-style:preserve-3d] transition-[border-color,box-shadow] duration-300"
               onMouseMove={handleMouseMove}
               onMouseLeave={(e) => {
                 handleMouseLeave(e);
                 handleCardLeave(e.currentTarget);
               }}
-              style={{
-                position: 'relative',
-                borderRadius: '14px',
-                overflow: 'hidden',
-                border: '1px solid var(--border-subtle)',
-                background: 'var(--bg-surface)',
-                cursor: 'default',
-                transformStyle: 'preserve-3d',
-                transition: 'border-color 0.3s, box-shadow 0.35s',
-              }}
               onMouseEnter={e => {
                 handleCardEnter(e.currentTarget, project.accent);
               }}
             >
-              {/* Image — grayscale → color on card hover */}
-              <div
-                className="grayscale-hover"
-                style={{ position: 'relative', height: '220px', overflow: 'hidden' }}
-              >
+              <div className="relative h-[220px] overflow-hidden">
                 <img
                   src={project.image}
                   alt={project.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease, filter 0.5s ease' }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.transform = 'scale(1.06)')}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.transform = 'scale(1)')}
+                  className="h-full w-full object-cover transition-[transform,filter] duration-500 group-hover:scale-[1.06]"
                 />
 
-                {/* Gradient overlay */}
-                <div className="project-image-overlay" style={{
-                  position: 'absolute', inset: 0,
-                  background: 'linear-gradient(to top, rgba(4,6,15,0.88) 0%, rgba(4,6,15,0.15) 55%, transparent 100%)',
-                  opacity: 0.7,
-                  transition: 'opacity 0.4s ease',
-                }} />
+                <div className="project-image-overlay absolute inset-0 bg-[linear-gradient(to_top,rgba(4,6,15,0.88)_0%,rgba(4,6,15,0.15)_55%,transparent_100%)] opacity-70 transition-opacity duration-400" />
 
-                {/* Hover action buttons */}
-                <div className="project-actions" style={{
-                  position: 'absolute', top: '1rem', right: '1rem',
-                  display: 'flex', gap: '0.5rem',
-                  pointerEvents: 'none',
-                }}>
+                <div className="project-actions pointer-events-none absolute right-4 top-4 flex gap-2">
                   <a
-                    className="project-overlay-action"
+                    className="project-overlay-action pointer-events-auto rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.08em] text-[var(--accent-cyan)] backdrop-blur-md transition-colors"
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Live Demo"
-                    style={{
-                      pointerEvents: 'auto',
-                      borderRadius: '999px',
-                      padding: '0.4rem 0.75rem',
-                      background: 'rgba(0,212,255,0.1)',
-                      backdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(0,212,255,0.3)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'var(--accent-cyan)',
-                      textDecoration: 'none',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.62rem',
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      transition: 'background 0.2s',
-                    }}
                   >
                     Live ↗
                   </a>
                   <a
-                    className="project-overlay-action"
+                    className="project-overlay-action pointer-events-auto rounded-full border border-white/20 bg-white/10 px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.08em] text-[var(--text-primary)] backdrop-blur-md transition-colors"
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     title="GitHub"
-                    style={{
-                      pointerEvents: 'auto',
-                      borderRadius: '999px',
-                      padding: '0.4rem 0.75rem',
-                      background: 'rgba(255,255,255,0.08)',
-                      backdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'var(--text-primary)',
-                      textDecoration: 'none',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.62rem',
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      transition: 'background 0.2s',
-                    }}
                   >
                     GitHub
                   </a>
                 </div>
               </div>
 
-              {/* Bottom glass panel */}
-              <div style={{
-                padding: '1.25rem 1.5rem 1.5rem',
-                background: 'rgba(13,18,37,0.5)',
-                backdropFilter: 'blur(12px)',
-              }}>
-                <h3 style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.02em',
-                  color: 'var(--text-primary)',
-                  marginBottom: '0.5rem',
-                }}>
+              <div className="bg-[rgba(13,18,37,0.5)] px-6 pb-6 pt-5 backdrop-blur-xl">
+                <h3 className="mb-2 font-serif text-[1.15rem] font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
                   {project.title}
                 </h3>
-                <p style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.82rem',
-                  color: 'var(--text-muted)',
-                  lineHeight: 1.65,
-                  marginBottom: '1rem',
-                }}>
+                <p className="mb-4 font-body text-[0.82rem] leading-[1.65] text-[var(--text-muted)]">
                   {project.description}
                 </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                <div className="flex flex-wrap gap-2">
                   {project.tags.map(tag => (
-                    <span key={tag} className="mono-chip project-tag">{tag}</span>
+                    <span
+                      key={tag}
+                      className={`project-tag inline-flex rounded-full border px-3 py-1 font-mono text-[0.65rem] uppercase tracking-[0.08em] text-[var(--text-muted)] bg-[rgba(15,22,48,0.6)] ${project.accentClass}`}
+                    >
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
