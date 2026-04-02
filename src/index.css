@@ -60,6 +60,9 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Lightweight dot grid — CSS only, no repaint */
+  background-image: radial-gradient(circle, rgba(100,200,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
 /* -------------- Custom Scrollbar -------------- */
@@ -183,8 +186,8 @@ body {
 /* -------------- Scan Line -------------- */
 @keyframes scanline {
   0%   { top: -2px; opacity: 0; }
-  5%   { opacity: 0.04; }
-  95%  { opacity: 0.04; }
+  5%   { opacity: 0.015; }
+  95%  { opacity: 0.015; }
   100% { top: 100vh; opacity: 0; }
 }
 
@@ -282,8 +285,24 @@ body {
   50%       { transform: translateY(-8px); }
 }
 
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
 .animate-float         { animation: float 3s ease-in-out infinite; }
 .animate-float-delayed { animation: float-delayed 3.5s ease-in-out infinite 0.7s; }
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+}
 
 /* -------------- Marquee Animations -------------- */
 @keyframes marquee-left  { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -299,11 +318,11 @@ body {
 
 /* -------------- Grayscale → Color Hover -------------- */
 .grayscale-hover {
-  filter: grayscale(1);
-  transition: filter 0.7s ease;
+  filter: grayscale(0.4) saturate(0.7);
+  transition: filter 0.6s ease;
 }
 .grayscale-hover:hover {
-  filter: grayscale(0);
+  filter: grayscale(0) saturate(1);
 }
 
 /* -------------- Floating Label Inputs -------------- */
@@ -419,6 +438,49 @@ body {
   white-space: nowrap;
 }
 
+/* -------------- Services Grid -------------- */
+.services-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.services-grid .service-hud-card:nth-child(4) {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .services-grid .service-hud-card:nth-child(4) {
+    grid-column: auto;
+  }
+}
+
+/* -------------- Form Status Animations -------------- */
+@keyframes loading-dots {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-1px); }
+}
+
+.loading-dots span {
+  display: inline-block;
+  animation: loading-dots 0.9s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) { animation-delay: 0.12s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.24s; }
+
+@keyframes dash-draw {
+  to { stroke-dashoffset: 0; }
+}
+
 /* -------------- Responsive Container -------------- */
 .container {
   width: 100%;
@@ -457,6 +519,18 @@ body {
 @media (max-width: 768px) {
   .custom-cursor { display: none !important; }
   body { cursor: auto !important; }
+
+  .shimmer-btn::after {
+    animation: none !important;
+  }
+
+  .glass-card-hover:hover,
+  .service-hud-card:hover,
+  .project-tilt-card:hover,
+  .skill-bento-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
 }
 
 /* -------------- Locomotive / smooth scroll compat -------------- */

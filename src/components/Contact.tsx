@@ -1,8 +1,6 @@
 import { FC, useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 const socials = [
   {
@@ -42,19 +40,12 @@ const Contact: FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.contact-item',
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1, y: 0, stagger: 0.12, duration: 0.9, ease: 'power3.out',
-          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', once: true },
-        }
-      );
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
+  useScrollReveal(sectionRef, '.contact-item', {
+    y: 50,
+    duration: 0.9,
+    stagger: 0.12,
+    start: 'top 70%',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,8 +85,9 @@ const Contact: FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
             <h2 className="contact-item" style={{
               fontFamily: 'var(--font-serif)',
-              fontStyle: 'italic',
               fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
+              fontWeight: 700,
+              letterSpacing: '0.03em',
               color: 'var(--text-primary)',
               lineHeight: 1.15,
               margin: 0,
@@ -134,13 +126,20 @@ const Contact: FC = () => {
                   onMouseEnter={e => {
                     const el = e.currentTarget as HTMLElement;
                     el.style.color = s.color;
+                    const icon = el.querySelector('[data-social-icon]') as HTMLElement;
+                    if (icon) icon.style.transform = 'translateY(-3px)';
                   }}
                   onMouseLeave={e => {
                     const el = e.currentTarget as HTMLElement;
                     el.style.color = 'var(--text-muted)';
+                    const icon = el.querySelector('[data-social-icon]') as HTMLElement;
+                    if (icon) icon.style.transform = 'translateY(0)';
                   }}
                 >
-                  <span style={{ color: 'inherit', display: 'flex' }}>{s.icon}</span>
+                  <span
+                    data-social-icon
+                    style={{ color: 'inherit', display: 'flex', transition: 'transform 0.25s ease' }}
+                  >{s.icon}</span>
                   {s.label}
                 </a>
               ))}
@@ -162,8 +161,8 @@ const Contact: FC = () => {
                     stroke="var(--accent-green)" strokeWidth="3"
                     strokeLinecap="round" strokeLinejoin="round"
                     strokeDasharray="50"
-                    strokeDashoffset="0"
-                    style={{ animation: 'none' }}
+                    strokeDashoffset="50"
+                    style={{ animation: 'dash-draw 0.7s ease forwards' }}
                   />
                 </svg>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--text-primary)', letterSpacing: '0.05em' }}>
@@ -222,19 +221,34 @@ const Contact: FC = () => {
                     fontWeight: 600,
                     letterSpacing: '0.2em',
                     textTransform: 'uppercase',
-                    border: 'none',
+                    border: '1px solid rgba(245,158,11,0.45)',
                     cursor: status === 'loading' ? 'not-allowed' : 'pointer',
                     background: status === 'error'
                       ? 'rgba(239,68,68,0.8)'
-                      : 'linear-gradient(135deg, rgba(245,158,11,0.9), rgba(245,158,11,0.7))',
-                    color: '#000',
-                    transition: 'box-shadow 0.3s',
-                    boxShadow: '0 0 24px rgba(245,158,11,0.2)',
+                      : 'rgba(245,158,11,0.06)',
+                    color: 'var(--accent-amber)',
+                    transition: 'box-shadow 0.3s, background 0.3s, border-color 0.3s',
+                    boxShadow: '0 0 18px rgba(245,158,11,0.15)',
                   }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.boxShadow = '0 0 32px rgba(245,158,11,0.4)')}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(245,158,11,0.2)')}
-                >
-                  {status === 'loading' ? '● ● ●' : status === 'error' ? 'Try Again' : 'Send Message →'}
+                  onMouseEnter={e => {
+                    if (status === 'error') return;
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.boxShadow = '0 0 28px rgba(245,158,11,0.32)';
+                    el.style.background = 'rgba(245,158,11,0.14)';
+                    el.style.borderColor = 'rgba(245,158,11,0.75)';
+                  }}
+                  onMouseLeave={e => {
+                    if (status === 'error') return;
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.boxShadow = '0 0 18px rgba(245,158,11,0.15)';
+                    el.style.background = 'rgba(245,158,11,0.06)';
+                    el.style.borderColor = 'rgba(245,158,11,0.45)';
+                  }}                >
+                  {status === 'loading' ? (
+                    <span className="loading-dots" aria-label="Loading">
+                      <span>●</span> <span>●</span> <span>●</span>
+                    </span>
+                  ) : status === 'error' ? 'Try Again' : 'Send Message →'}
                 </button>
               </form>
             )}

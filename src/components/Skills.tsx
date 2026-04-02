@@ -1,7 +1,7 @@
 import { useGSAP } from '@gsap/react';
-import { FC, lazy, Suspense, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { FC, lazy, Suspense, useRef, useState } from 'react';
+import { gsap } from '../lib/gsap';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 const SkillCube = lazy(() => import('./3D/SkillCube'));
 
@@ -52,18 +52,31 @@ const categories = [
 
 const Skills: FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
+  const titleUnderlineRef = useRef<HTMLSpanElement>(null);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+
+  useScrollReveal(sectionRef, '.skill-bento-card', {
+    y: 60,
+    duration: 0.9,
+    stagger: 0.12,
+    start: 'top 70%',
+  });
 
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      // Cards stagger in
-      gsap.fromTo('.skill-bento-card',
-        { opacity: 0, y: 60, scale: 0.94 },
-        {
-          opacity: 1, y: 0, scale: 1, stagger: 0.12, duration: 0.9, ease: 'power3.out',
-          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', once: true },
-        }
-      );
+      if (titleUnderlineRef.current) {
+        gsap.fromTo(
+          titleUnderlineRef.current,
+          { scaleX: 0, transformOrigin: 'left center' },
+          {
+            scaleX: 1,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', once: true },
+            delay: 0.3,
+          }
+        );
+      }
 
       // Skill bars fill on scroll
       categories.forEach((cat, ci) => {
@@ -95,12 +108,24 @@ const Skills: FC = () => {
         {/* Heading */}
         <h2 style={{
           fontFamily: 'var(--font-serif)',
-          fontStyle: 'italic',
           fontSize: 'clamp(2rem, 4vw, 3rem)',
+          fontWeight: 700,
+          letterSpacing: '0.03em',
           color: 'var(--text-primary)',
           marginBottom: '3rem',
         }}>
           Technical expertise.
+          <span
+            ref={titleUnderlineRef}
+            style={{
+              display: 'block',
+              width: '120px',
+              height: '1px',
+              marginTop: '0.65rem',
+              background: 'linear-gradient(to right, var(--accent-cyan), transparent)',
+              transform: 'scaleX(0)',
+            }}
+          />
         </h2>
 
         {/* Bento grid — 3 columns */}
@@ -117,6 +142,21 @@ const Skills: FC = () => {
                 padding: '1.75rem',
                 position: 'relative',
                 overflow: 'hidden',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                setHoveredCategory(cat.num);
+                el.style.transform = 'translateY(-4px)';
+                el.style.borderColor = `${cat.accentColor}40`;
+                el.style.boxShadow = `0 12px 40px ${cat.accentColor}12`;
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                setHoveredCategory((current) => (current === cat.num ? null : current));
+                el.style.transform = 'translateY(0)';
+                el.style.borderColor = '';
+                el.style.boxShadow = '';
               }}
             >
               {/* Top bar accent */}
@@ -136,7 +176,9 @@ const Skills: FC = () => {
                     {cat.num}
                   </div>
                   <h3 style={{
-                    fontFamily: 'var(--font-serif)', fontStyle: 'italic',
+                    fontFamily: 'var(--font-serif)',
+                    fontWeight: 600,
+                    letterSpacing: '0.02em',
                     fontSize: '1.35rem', color: 'var(--text-primary)', margin: 0,
                   }}>
                     {cat.name}
@@ -148,7 +190,11 @@ const Skills: FC = () => {
                   <Suspense fallback={
                     <div style={{ width: 88, height: 88, border: '1px solid var(--border-subtle)', borderRadius: 8 }} />
                   }>
-                    <SkillCube color={cat.cubeColor} accentColor={cat.accentColor} />
+                    <SkillCube
+                      color={cat.cubeColor}
+                      accentColor={cat.accentColor}
+                      hovered={hoveredCategory === cat.num}
+                    />
                   </Suspense>
                 </div>
               </div>
@@ -176,7 +222,8 @@ const Skills: FC = () => {
                     <div style={{
                       width: '100%', height: '3px',
                       background: 'rgba(100,200,255,0.07)',
-                      borderRadius: '9999px', overflow: 'hidden',
+                      borderRadius: '9999px', overflow: 'visible',
+                      position: 'relative',
                     }}>
                       {/* Fill */}
                       <div
@@ -188,8 +235,22 @@ const Skills: FC = () => {
                           background: `linear-gradient(to right, ${cat.color}80, ${cat.color})`,
                           transformOrigin: 'left center',
                           boxShadow: `0 0 6px ${cat.color}60`,
+                          position: 'relative',
                         }}
-                      />
+                      >
+                        {/* Glowing dot at right end */}
+                        <div style={{
+                          position: 'absolute',
+                          right: '-3px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          width: '7px',
+                          height: '7px',
+                          borderRadius: '50%',
+                          background: cat.color,
+                          boxShadow: `0 0 8px ${cat.color}, 0 0 16px ${cat.color}80`,
+                        }} />
+                      </div>
                     </div>
                   </div>
                 ))}

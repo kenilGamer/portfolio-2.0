@@ -1,7 +1,7 @@
 import { FC, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap } from '../lib/gsap';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 interface ServicesProps {
   scrollToSection?: (id: string) => void;
@@ -61,16 +61,16 @@ const services = [
 const Services: FC<ServicesProps> = ({ scrollToSection }) => {
   const sectionRef = useRef<HTMLElement>(null);
 
+  useScrollReveal(sectionRef, '.service-hud-card', {
+    y: 60,
+    duration: 0.9,
+    stagger: 0.14,
+    start: 'top 70%',
+  });
+
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      gsap.fromTo('.service-hud-card',
-        { opacity: 0, y: 60, scale: 0.94 },
-        {
-          opacity: 1, y: 0, scale: 1, stagger: 0.14, duration: 0.9, ease: 'power3.out',
-          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', once: true },
-        }
-      );
+      gsap.set('.service-hud-card', { transformPerspective: 800, transformStyle: 'preserve-3d' });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -85,8 +85,9 @@ const Services: FC<ServicesProps> = ({ scrollToSection }) => {
         {/* Heading */}
         <h2 style={{
           fontFamily: 'var(--font-serif)',
-          fontStyle: 'italic',
           fontSize: 'clamp(2rem, 4vw, 3rem)',
+          fontWeight: 700,
+          letterSpacing: '0.03em',
           color: 'var(--text-primary)',
           marginBottom: '3rem',
         }}>
@@ -94,63 +95,89 @@ const Services: FC<ServicesProps> = ({ scrollToSection }) => {
         </h2>
 
         {/* 2×2 grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))',
-          gap: '1.5rem',
-        }}>
+        <div className="services-grid" style={{ display: 'grid', gap: '1.5rem' }}>
           {services.map((svc) => (
             <div
               key={svc.num}
               className="service-hud-card"
               style={{
+                gridColumn: svc.num === '04' ? '1 / -1' : 'auto',
                 position: 'relative',
                 padding: '2rem',
                 background: 'rgba(13,18,37,0.55)',
-                backdropFilter: 'blur(16px)',
+                backdropFilter: 'blur(8px)',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: '16px',
                 overflow: 'hidden',
                 cursor: 'default',
-                transition: 'border-color 0.35s, box-shadow 0.35s',
+                transition: 'border-color 0.35s, box-shadow 0.35s, transform 0.25s',
+              }}
+              onMouseMove={e => {
+                const el = e.currentTarget as HTMLElement;
+                const rect = el.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                el.style.setProperty('--spot-x', `${x}%`);
+                el.style.setProperty('--spot-y', `${y}%`);
               }}
               onMouseEnter={e => {
-                const el = e.currentTarget;
+                const el = e.currentTarget as HTMLElement;
                 el.style.borderColor = `${svc.accentColor}40`;
-                el.style.boxShadow = `0 0 32px ${svc.accentColor}18`;
+                el.style.boxShadow = `0 0 32px ${svc.accentColor}15`;
+                el.style.transform = 'translateY(-3px)';
+                // Reveal number
+                const num = el.querySelector('[data-svc-num]') as HTMLElement;
+                if (num) num.style.opacity = '0.12';
               }}
               onMouseLeave={e => {
-                const el = e.currentTarget;
+                const el = e.currentTarget as HTMLElement;
                 el.style.borderColor = 'var(--border-subtle)';
                 el.style.boxShadow = 'none';
+                el.style.transform = 'translateY(0)';
+                const num = el.querySelector('[data-svc-num]') as HTMLElement;
+                if (num) num.style.opacity = '0.06';
               }}
             >
-              {/* Decorative large number */}
+              {/* Spotlight overlay — follows cursor */}
               <div style={{
-                position: 'absolute', top: '1rem', left: '1.5rem',
+                position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+                background: `radial-gradient(400px circle at var(--spot-x, 50%) var(--spot-y, 50%), ${svc.accentColor}0a, transparent 70%)`,
+                transition: 'opacity 0.3s',
+              }} />
+
+              {/* Decorative large number */}
+              <div data-svc-num style={{
+                position: 'absolute', top: '1rem', right: '1.5rem',
                 fontFamily: 'var(--font-display)',
-                fontSize: '5rem', lineHeight: 1,
+                fontSize: '6rem', lineHeight: 1,
                 color: svc.accentColor, opacity: 0.06,
                 pointerEvents: 'none',
                 userSelect: 'none',
+                transition: 'opacity 0.3s',
               }}>
                 {svc.num}
               </div>
 
-              {/* Accent icon top-right */}
-              <div style={{
-                position: 'absolute', top: '1.5rem', right: '1.5rem',
-                color: svc.accentColor, opacity: 0.5,
-              }}>
-                {svc.icon}
-              </div>
-
               {/* Content */}
               <div style={{ position: 'relative', zIndex: 1 }}>
+                {/* Accent icon box */}
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: '42px', height: '42px',
+                  background: `${svc.accentColor}12`,
+                  border: `1px solid ${svc.accentColor}28`,
+                  borderRadius: '10px',
+                  color: svc.accentColor,
+                  marginBottom: '1.25rem',
+                  transition: 'background 0.3s, box-shadow 0.3s',
+                }}>
+                  {svc.icon}
+                </div>
                 <h3 style={{
                   fontFamily: 'var(--font-serif)',
-                  fontStyle: 'italic',
                   fontSize: '1.3rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.02em',
                   color: 'var(--text-primary)',
                   marginBottom: '0.75rem',
                   lineHeight: 1.3,
@@ -181,7 +208,7 @@ const Services: FC<ServicesProps> = ({ scrollToSection }) => {
                 </div>
               </div>
 
-              {/* CTA link */}
+              {/* CTA link with underline slide-in */}
               <button
                 onClick={() => scrollToSection?.('contact')}
                 style={{
@@ -195,14 +222,36 @@ const Services: FC<ServicesProps> = ({ scrollToSection }) => {
                   border: 'none',
                   cursor: 'pointer',
                   padding: 0,
-                  display: 'flex', alignItems: 'center', gap: '0.35rem',
-                  opacity: 0.85,
-                  transition: 'opacity 0.2s',
+                  display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                  position: 'relative',
                 }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '1')}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = '0.85')}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLElement;
+                  const line = el.querySelector('[data-underline]') as HTMLElement;
+                  if (line) line.style.transform = 'scaleX(1)';
+                  const arrow = el.querySelector('[data-arrow]') as HTMLElement;
+                  if (arrow) arrow.style.transform = 'translateX(4px)';
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement;
+                  const line = el.querySelector('[data-underline]') as HTMLElement;
+                  if (line) line.style.transform = 'scaleX(0)';
+                  const arrow = el.querySelector('[data-arrow]') as HTMLElement;
+                  if (arrow) arrow.style.transform = 'translateX(0)';
+                }}
               >
-                Get Started <span>↗</span>
+                <span style={{ position: 'relative', display: 'inline-block' }}>
+                  Get Started
+                  <span data-underline style={{
+                    position: 'absolute', bottom: '-2px', left: 0,
+                    width: '100%', height: '1px',
+                    background: svc.accentColor,
+                    transform: 'scaleX(0)',
+                    transformOrigin: 'left center',
+                    transition: 'transform 0.25s ease',
+                  }} />
+                </span>
+                <span data-arrow style={{ transition: 'transform 0.25s ease' }}>↗</span>
               </button>
             </div>
           ))}

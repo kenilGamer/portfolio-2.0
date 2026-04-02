@@ -10,34 +10,13 @@ import Testimonials from "./components/Testimonials";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import GlobalAtmosphere from "./components/GlobalAtmosphere";
-import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-
-import { Draggable } from "gsap/Draggable";
-import { Flip } from "gsap/Flip";
-import { MotionPathPlugin } from "gsap/MotionPathPlugin";
-import { Observer } from "gsap/Observer";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollSmoother } from "gsap/ScrollSmoother";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { SplitText } from "gsap/SplitText";
-import { TextPlugin } from "gsap/TextPlugin";
+import { gsap, ScrollTrigger, ScrollSmoother, initGSAP } from "./lib/gsap";
 import CustomCursor from "./components/ui/CustomCursor";
 import ScrollToTop from "./components/ui/ScrollToTop";
 import PageLoader from "./components/ui/PageLoader";
 
-gsap.registerPlugin(
-  useGSAP,
-  Draggable,
-  Flip,
-  MotionPathPlugin,
-  Observer,
-  ScrollTrigger,
-  ScrollSmoother,
-  ScrollToPlugin,
-  SplitText,
-  TextPlugin
-);
+initGSAP();
 
 const App: FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0);

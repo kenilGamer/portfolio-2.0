@@ -1,4 +1,6 @@
-import { FC } from 'react';
+import { FC, useMemo, useRef, useState } from 'react';
+import { useGSAP } from '@gsap/react';
+import { gsap } from '../lib/gsap';
 
 const testimonials = [
   {
@@ -61,7 +63,7 @@ const TestiCard: FC<CardProps> = ({ t, i }) => (
     {/* Large decorative quote */}
     <div style={{
       position: 'absolute', top: '0.75rem', left: '1.25rem',
-      fontFamily: 'var(--font-serif)',
+      fontFamily: 'var(--font-display)',
       fontSize: '4rem', lineHeight: 1,
       color: 'var(--accent-cyan)', opacity: 0.06,
       pointerEvents: 'none', userSelect: 'none',
@@ -110,33 +112,106 @@ const TestiCard: FC<CardProps> = ({ t, i }) => (
 );
 
 const Testimonials: FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const row1Ref = useRef<HTMLDivElement>(null);
+  const row2Ref = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const isMobile = useMemo(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false), []);
+
+  useGSAP(() => {
+    const row1 = row1Ref.current;
+    const row2 = row2Ref.current;
+    if (!row1) return;
+
+    const row1Shift = row1.scrollWidth / 2;
+    const tl1 = gsap.fromTo(
+      row1,
+      { x: 0 },
+      {
+        x: -row1Shift,
+        duration: 30,
+        ease: 'none',
+        repeat: -1,
+      }
+    );
+
+    let tl2: gsap.core.Tween | undefined;
+    if (row2 && !isMobile) {
+      const row2Shift = row2.scrollWidth / 2;
+      tl2 = gsap.fromTo(
+        row2,
+        { x: -row2Shift },
+        {
+          x: 0,
+          duration: 35,
+          ease: 'none',
+          repeat: -1,
+        }
+      );
+    }
+
+    const onEnter = () => {
+      setIsPaused(true);
+      tl1.pause();
+      tl2?.pause();
+    };
+
+    const onLeave = () => {
+      setIsPaused(false);
+      tl1.play();
+      tl2?.play();
+    };
+
+    const section = sectionRef.current;
+    section?.addEventListener('mouseenter', onEnter);
+    section?.addEventListener('mouseleave', onLeave);
+
+    return () => {
+      section?.removeEventListener('mouseenter', onEnter);
+      section?.removeEventListener('mouseleave', onLeave);
+      tl1.kill();
+      tl2?.kill();
+    };
+  }, [isMobile]);
+
   return (
-    <section style={{ padding: '8rem 0', position: 'relative', overflow: 'hidden' }}>
+    <section ref={sectionRef} style={{ padding: '8rem 0', position: 'relative', overflow: 'hidden' }}>
       {/* Section label */}
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 2.5rem', marginBottom: '3rem' }}>
         <div className="section-label">06 / Testimonials</div>
         <h2 style={{
           fontFamily: 'var(--font-serif)',
-          fontStyle: 'italic',
           fontSize: 'clamp(2rem, 4vw, 3rem)',
+          fontWeight: 700,
+          letterSpacing: '0.03em',
           color: 'var(--text-primary)',
           margin: 0,
         }}>
           What clients say.
         </h2>
+        <p style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.62rem',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'var(--text-dim)',
+          marginTop: '0.8rem',
+        }}>
+          {isPaused ? 'Paused' : 'Live Marquee'}
+        </p>
       </div>
 
       <div className="marquee-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {/* Row 1 — left */}
         <div style={{ overflow: 'hidden' }}>
-          <div className="marquee-left" style={{ display: 'flex', width: 'max-content' }}>
+          <div ref={row1Ref} style={{ display: 'flex', width: 'max-content', willChange: 'transform' }}>
             {row1.map((t, i) => <TestiCard key={i} t={t} i={i} />)}
           </div>
         </div>
 
         {/* Row 2 — right (slower) */}
-        <div style={{ overflow: 'hidden' }}>
-          <div className="marquee-right" style={{ display: 'flex', width: 'max-content' }}>
+        <div style={{ overflow: 'hidden', display: isMobile ? 'none' : 'block' }}>
+          <div ref={row2Ref} style={{ display: 'flex', width: 'max-content', willChange: 'transform' }}>
             {row2.map((t, i) => <TestiCard key={i} t={t} i={i} />)}
           </div>
         </div>

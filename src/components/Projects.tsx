@@ -1,7 +1,7 @@
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FC, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
+import { gsap } from '../lib/gsap';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 const projects = [
   {
@@ -11,6 +11,7 @@ const projects = [
     tags: ['Three.js', 'GSAP', 'React', 'Tailwind CSS'],
     link: 'https://skateboard-one.vercel.app/',
     github: 'https://github.com/kenilGamer/Skateboard',
+    accent: '#00D4FF',
   },
   {
     title: '3D Product Viewer',
@@ -19,6 +20,7 @@ const projects = [
     tags: ['Three.js', 'WebGL', 'React', 'GSAP'],
     link: 'https://amaya.godcraft.fun/',
     github: 'https://github.com/kenilGamer/Amaya',
+    accent: '#F59E0B',
   },
   {
     title: 'AI-Powered Dashboard',
@@ -27,6 +29,7 @@ const projects = [
     tags: ['React', 'Node.js', 'TensorFlow', 'D3.js'],
     link: 'https://ai.godcraft.fun/',
     github: 'https://github.com/kenilGamer/AI-Image-Enhancer',
+    accent: '#22C55E',
   },
   {
     title: 'Movie Streaming App',
@@ -35,22 +38,24 @@ const projects = [
     tags: ['React', 'Node.js', 'MongoDB', 'Redux'],
     link: 'https://movies.godcraft.fun/',
     github: 'https://github.com/kenilGamer/Movies-app',
+    accent: '#A78BFA',
   },
 ];
 
 const Projects: FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
+  useScrollReveal(sectionRef, '.project-tilt-card', {
+    y: 60,
+    duration: 0.9,
+    stagger: 0.15,
+    start: 'top 70%',
+  });
+
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      gsap.fromTo('.project-tilt-card',
-        { opacity: 0, y: 70 },
-        {
-          opacity: 1, y: 0, stagger: 0.14, duration: 0.9, ease: 'power3.out',
-          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', once: true },
-        }
-      );
+      gsap.set('.project-overlay-action', { opacity: 0, y: -8 });
+      gsap.set('.project-tag', { opacity: 0.9 });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -60,13 +65,84 @@ const Projects: FC = () => {
     const rect  = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const rotY =  ((x - rect.width  / 2) / rect.width)  *  10;
-    const rotX = -((y - rect.height / 2) / rect.height) *  10;
-    gsap.to(card, { rotationX: rotX, rotationY: rotY, transformPerspective: 1000, duration: 0.3, ease: 'power2.out' });
+    const rotY = ((x - rect.width / 2) / rect.width) * 20;
+    const rotX = -((y - rect.height / 2) / rect.height) * 20;
+    const maxTilt = 10;
+    const clampedX = Math.max(-maxTilt, Math.min(maxTilt, rotX));
+    const clampedY = Math.max(-maxTilt, Math.min(maxTilt, rotY));
+
+    gsap.to(card, {
+      rotationX: clampedX,
+      rotationY: clampedY,
+      duration: 0.25,
+      ease: 'power2.out',
+      transformPerspective: 800,
+      overwrite: 'auto',
+    });
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     gsap.to(e.currentTarget, { rotationX: 0, rotationY: 0, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
+  };
+
+  const handleCardEnter = (card: HTMLDivElement, accent: string) => {
+    gsap.to(card, {
+      borderColor: `${accent}55`,
+      boxShadow: `0 0 30px ${accent}26`,
+      duration: 0.32,
+      ease: 'power2.out',
+    });
+
+    const overlay = card.querySelector('.project-image-overlay');
+    const actions = card.querySelectorAll('.project-overlay-action');
+    const tags = card.querySelectorAll('.project-tag');
+
+    gsap.to(overlay, { opacity: 0.45, duration: 0.35, ease: 'power2.out' });
+    gsap.to(actions, {
+      opacity: 1,
+      y: 0,
+      duration: 0.32,
+      stagger: 0.1,
+      ease: 'power3.out',
+    });
+    gsap.to(tags, {
+      color: accent,
+      borderColor: `${accent}66`,
+      backgroundColor: `${accent}12`,
+      duration: 0.25,
+      stagger: 0.05,
+      ease: 'power2.out',
+    });
+  };
+
+  const handleCardLeave = (card: HTMLDivElement) => {
+    gsap.to(card, {
+      borderColor: 'var(--border-subtle)',
+      boxShadow: 'none',
+      duration: 0.3,
+      ease: 'power2.out',
+    });
+
+    const overlay = card.querySelector('.project-image-overlay');
+    const actions = card.querySelectorAll('.project-overlay-action');
+    const tags = card.querySelectorAll('.project-tag');
+
+    gsap.to(overlay, { opacity: 0.7, duration: 0.3, ease: 'power2.out' });
+    gsap.to(actions, {
+      opacity: 0,
+      y: -8,
+      duration: 0.24,
+      stagger: 0.05,
+      ease: 'power2.inOut',
+    });
+    gsap.to(tags, {
+      color: 'var(--text-muted)',
+      borderColor: 'var(--border-subtle)',
+      backgroundColor: 'rgba(15, 22, 48, 0.6)',
+      duration: 0.2,
+      stagger: 0.03,
+      ease: 'power2.out',
+    });
   };
 
   return (
@@ -79,8 +155,9 @@ const Projects: FC = () => {
         {/* Heading */}
         <h2 style={{
           fontFamily: 'var(--font-serif)',
-          fontStyle: 'italic',
           fontSize: 'clamp(2rem, 4vw, 3rem)',
+          fontWeight: 700,
+          letterSpacing: '0.03em',
           color: 'var(--text-primary)',
           marginBottom: '3rem',
         }}>
@@ -98,7 +175,10 @@ const Projects: FC = () => {
               key={i}
               className="project-tilt-card"
               onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
+              onMouseLeave={(e) => {
+                handleMouseLeave(e);
+                handleCardLeave(e.currentTarget);
+              }}
               style={{
                 position: 'relative',
                 borderRadius: '14px',
@@ -107,10 +187,10 @@ const Projects: FC = () => {
                 background: 'var(--bg-surface)',
                 cursor: 'default',
                 transformStyle: 'preserve-3d',
-                transition: 'border-color 0.3s',
+                transition: 'border-color 0.3s, box-shadow 0.35s',
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-active)';
+                handleCardEnter(e.currentTarget, project.accent);
               }}
             >
               {/* Image — grayscale → color on card hover */}
@@ -121,70 +201,77 @@ const Projects: FC = () => {
                 <img
                   src={project.image}
                   alt={project.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease, filter 0.5s ease' }}
                   onMouseEnter={e => ((e.currentTarget as HTMLElement).style.transform = 'scale(1.06)')}
                   onMouseLeave={e => ((e.currentTarget as HTMLElement).style.transform = 'scale(1)')}
                 />
 
                 {/* Gradient overlay */}
-                <div style={{
+                <div className="project-image-overlay" style={{
                   position: 'absolute', inset: 0,
-                  background: 'linear-gradient(to top, var(--bg-surface) 0%, transparent 60%)',
+                  background: 'linear-gradient(to top, rgba(4,6,15,0.88) 0%, rgba(4,6,15,0.15) 55%, transparent 100%)',
+                  opacity: 0.7,
+                  transition: 'opacity 0.4s ease',
                 }} />
 
                 {/* Hover action buttons */}
                 <div className="project-actions" style={{
                   position: 'absolute', top: '1rem', right: '1rem',
                   display: 'flex', gap: '0.5rem',
-                  opacity: 0, transition: 'opacity 0.3s',
+                  pointerEvents: 'none',
                 }}>
                   <a
+                    className="project-overlay-action"
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Live Demo"
                     style={{
-                      width: '36px', height: '36px',
-                      borderRadius: '50%',
-                      background: 'rgba(0,212,255,0.15)',
+                      pointerEvents: 'auto',
+                      borderRadius: '999px',
+                      padding: '0.4rem 0.75rem',
+                      background: 'rgba(0,212,255,0.1)',
                       backdropFilter: 'blur(8px)',
                       border: '1px solid rgba(0,212,255,0.3)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: 'var(--accent-cyan)',
-                      textDecoration: 'none', fontSize: '0.75rem', fontWeight: 700,
+                      textDecoration: 'none',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.62rem',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
                       transition: 'background 0.2s',
                     }}
                   >
-                    ↗
+                    Live ↗
                   </a>
                   <a
+                    className="project-overlay-action"
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     title="GitHub"
                     style={{
-                      width: '36px', height: '36px',
-                      borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.1)',
+                      pointerEvents: 'auto',
+                      borderRadius: '999px',
+                      padding: '0.4rem 0.75rem',
+                      background: 'rgba(255,255,255,0.08)',
                       backdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255,255,255,0.15)',
+                      border: '1px solid rgba(255,255,255,0.2)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: 'var(--text-primary)',
                       textDecoration: 'none',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.62rem',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
                       transition: 'background 0.2s',
                     }}
                   >
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                    </svg>
+                    GitHub
                   </a>
                 </div>
               </div>
-
-              {/* Show action buttons on card hover using CSS variable trick */}
-              <style>{`
-                .project-tilt-card:hover .project-actions { opacity: 1 !important; }
-              `}</style>
 
               {/* Bottom glass panel */}
               <div style={{
@@ -194,8 +281,9 @@ const Projects: FC = () => {
               }}>
                 <h3 style={{
                   fontFamily: 'var(--font-serif)',
-                  fontStyle: 'italic',
                   fontSize: '1.15rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.02em',
                   color: 'var(--text-primary)',
                   marginBottom: '0.5rem',
                 }}>
@@ -212,7 +300,7 @@ const Projects: FC = () => {
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                   {project.tags.map(tag => (
-                    <span key={tag} className="mono-chip">{tag}</span>
+                    <span key={tag} className="mono-chip project-tag">{tag}</span>
                   ))}
                 </div>
               </div>

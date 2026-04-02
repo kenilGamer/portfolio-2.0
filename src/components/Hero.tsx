@@ -1,8 +1,6 @@
-import { FC, useRef, lazy, Suspense } from 'react';
+import { FC, useMemo, useRef, lazy, Suspense } from 'react';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
+import { gsap } from '../lib/gsap';
 import MagneticButton from './ui/MagneticButton';
 
 const HeroSphere = lazy(() => import('./3D/HeroSphere'));
@@ -16,66 +14,52 @@ const hudBadges = [
   { label: 'GSAP · MOTION', top: '70%', left: '5%', delay: 0.3 },
   { label: 'R3F CANVAS', top: '20%', right: '6%', delay: 0.6 },
   { label: 'REACT · TS', top: '78%', right: '8%', delay: 0.15 },
-];
+] as const;
 
 const Hero: FC<HeroProps> = ({ scrollToSection }) => {
   const heroRef = useRef<HTMLDivElement>(null);
-  const textColRef = useRef<HTMLDivElement>(null);
+  const textLayerRef = useRef<HTMLDivElement>(null);
+  const sphereLayerRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
+  const headlineWords = useMemo(
+    () => ['CRAFTING', 'BEAUTIFUL', 'DIGITAL', 'EXPERIENCES'],
+    []
+  );
 
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger, SplitText);
-
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 2.2 });
 
-      // Badges stagger
       tl.fromTo('.hero-badge', { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.12, duration: 0.6 }, 0);
 
-      // Headline: per-word, each word's chars rotate from -90° on X
-      const words = headlineRef.current?.querySelectorAll('.hero-word');
-      if (words) {
-        words.forEach((word, wi) => {
-          const split = new SplitText(word, { type: 'chars' });
-          split.chars.forEach(c => ((c as HTMLElement).style.display = 'inline-block'));
-          tl.fromTo(
-            split.chars,
-            { opacity: 0, rotationX: -90, transformOrigin: '50% 100%' },
-            { opacity: 1, rotationX: 0, stagger: 0.025, duration: 0.7, ease: 'back.out(1.5)' },
-            wi * 0.12
-          );
-        });
+      const chars = headlineRef.current?.querySelectorAll('.hero-char');
+      if (chars?.length) {
+        tl.fromTo(
+          chars,
+          {
+            y: 100,
+            rotationX: -90,
+            opacity: 0,
+            transformOrigin: '50% 100%',
+          },
+          {
+            y: 0,
+            rotationX: 0,
+            opacity: 1,
+            stagger: 0.025,
+            duration: 0.85,
+            ease: 'power4.out',
+          },
+          0.4
+        );
       }
 
-      // Sub-headline
       tl.fromTo('.hero-sub', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7 }, '-=0.3');
-
-      // Buttons
       tl.fromTo('.hero-btn', { opacity: 0, y: 20, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, stagger: 0.1, duration: 0.6 }, '-=0.4');
-
-      // Stats row
-      tl.fromTo('.hero-stat', { opacity: 0, y: 24 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.6 }, '-=0.3');
-
-      // HUD badges — float in
+      tl.fromTo('.hero-stats-divider', { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.65 }, '-=0.2');
+      tl.fromTo('.hero-stat', { opacity: 0, y: 24 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.6 }, '-=0.2');
       tl.fromTo('.hud-float-badge', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, stagger: 0.15, duration: 0.5 }, '-=0.5');
-
-      // Scroll indicator
       tl.fromTo('.scroll-indicator', { opacity: 0 }, { opacity: 1, duration: 0.6 }, '-=0.2');
-
-      // Parallax on scroll
-      ScrollTrigger.create({
-        trigger: heroRef.current,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 1,
-        onUpdate: (self) => {
-          gsap.to(textColRef.current, {
-            y: self.progress * 60,
-            opacity: 1 - self.progress * 0.6,
-            duration: 0.3,
-          });
-        },
-      });
     }, heroRef);
 
     return () => ctx.revert();
@@ -91,17 +75,17 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(480px, 100%), 1fr))',
-          alignItems: 'center',
+          gridTemplateColumns: 'minmax(0, 1.06fr) minmax(0, 0.94fr)',
+          alignItems: 'start',
           minHeight: 'calc(100vh - 80px)',
-          padding: '4rem 2.5rem 2rem',
-          gap: '2rem',
-          maxWidth: '1400px',
+          
+          gap: '0.75rem',
+          maxWidth: '1320px',
           margin: '0 auto',
         }}
       >
         {/* ---- LEFT: Text content ---- */}
-        <div ref={textColRef} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div ref={textLayerRef} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingTop: '0.5rem' }}>
 
           {/* Availability badges */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
@@ -129,16 +113,30 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
           </div>
 
           {/* Headline: 4 words stacked */}
-          <div ref={headlineRef} className="perspective-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 0.92 }}>
-            {['Crafting', 'Beautiful', 'Digital', 'Experiences'].map(word => (
+          <div ref={headlineRef} className="perspective-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 0.88 }}>
+            {headlineWords.map((word) => (
               <div key={word} className="hero-word" style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(3.8rem, 8.5vw, 9rem)',
+                fontSize: 'clamp(2.4rem, 6.1vw, 7rem)',
+                fontWeight: 800,
                 color: 'var(--text-primary)',
                 letterSpacing: '0.02em',
-                overflow: 'hidden',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
               }}>
-                {word}
+                {word.split('').map((char, index) => (
+                  <span
+                    key={`${word}-${index}`}
+                    className="hero-char"
+                    style={{
+                      display: 'inline-block',
+                      transformStyle: 'preserve-3d',
+                      willChange: 'transform, opacity',
+                    }}
+                  >
+                    {char}
+                  </span>
+                ))}
               </div>
             ))}
           </div>
@@ -155,7 +153,7 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
             <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>React</span>,{' '}
             <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>TypeScript</span> &{' '}
             <span style={{ color: 'var(--accent-cyan)', fontWeight: 500 }}>Next.js</span>{' '}
-            — where precision engineering meets creative design.
+            through responsive architecture, cinematic motion, and product-grade craft.
           </p>
 
           {/* CTA Buttons */}
@@ -208,44 +206,61 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
 
           {/* Stats row */}
           <div style={{
-            borderTop: '1px solid var(--border-subtle)',
-            paddingTop: '1.5rem',
             display: 'flex',
-            gap: '2.5rem',
-            flexWrap: 'wrap',
+            flexDirection: 'column',
+            gap: '1.5rem',
           }}>
-            {[
-              { value: '50+', label: 'Projects' },
-              { value: '3+', label: 'Years' },
-              { value: '100%', label: 'Satisfaction' },
-            ].map(stat => (
-              <div key={stat.label} className="hero-stat">
-                <div style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
-                  color: 'var(--text-primary)',
-                  lineHeight: 1,
-                }}>
-                  {stat.value}
+            <div
+              className="hero-stats-divider"
+              style={{
+                width: '100%',
+                height: '1px',
+                background: 'linear-gradient(to right, rgba(100,200,255,0.45), transparent)',
+                transformOrigin: 'left center',
+              }}
+            />
+            <div style={{
+              display: 'flex',
+              gap: '2.5rem',
+              alignItems: 'flex-start',
+              justifyContent: 'flex-start',
+              width: '100%',
+              flexWrap: 'wrap',
+            }}>
+              {[
+                { value: '50+', label: 'Projects Built' },
+                { value: '3+', label: 'Years Exp' },
+                { value: '100%', label: 'Client Satisfaction' },
+              ].map(stat => (
+                <div key={stat.label} className="hero-stat">
+                  <div style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
+                    color: 'var(--text-primary)',
+                    lineHeight: 1,
+                  }}>
+                    {stat.value}
+                  </div>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.6rem',
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-muted)',
+                    marginTop: '0.3rem',
+                  }}>
+                    {stat.label}
+                  </div>
                 </div>
-                <div style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.6rem',
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  color: 'var(--text-muted)',
-                  marginTop: '0.3rem',
-                }}>
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* ---- RIGHT: 3D Sphere (hidden on small) ---- */}
+        {/* ---- RIGHT: 3D Sphere (hidden on mobile) ---- */}
         <div
-          className="hidden lg:block"
+          ref={sphereLayerRef}
+          className="hidden md:block"
           style={{ position: 'relative', height: '560px' }}
         >
           <Suspense fallback={null}>
@@ -260,8 +275,8 @@ const Hero: FC<HeroProps> = ({ scrollToSection }) => {
               style={{
                 position: 'absolute',
                 top: b.top,
-                left: (b as any).left,
-                right: (b as any).right,
+                left: 'left' in b ? b.left : undefined,
+                right: 'right' in b ? b.right : undefined,
                 animationDelay: `${b.delay}s`,
                 opacity: 0,
               }}

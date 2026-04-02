@@ -1,7 +1,6 @@
 import { FC, useState, useRef } from 'react';
-import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from '../lib/gsap';
 
 interface HeaderProps {
   scrollToSection: (id: string) => void;
@@ -13,6 +12,8 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const logoBadgePathRef = useRef<SVGRectElement>(null);
+  const logoDotRef = useRef<HTMLSpanElement>(null);
 
   const navItems = [
     { id: 'hero',         label: 'Home' },
@@ -25,13 +26,37 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
   ];
 
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        headerRef.current,
+        { y: -60, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.9, ease: 'cinematic', delay: 2.2 }
+      );
 
-    // Entrance: slide down after loader (~2.5s)
-    gsap.fromTo(headerRef.current,
-      { y: -80, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', delay: 2.5 }
-    );
+      if (logoBadgePathRef.current) {
+        gsap.fromTo(
+          logoBadgePathRef.current,
+          { strokeDasharray: 128, strokeDashoffset: 128 },
+          { strokeDashoffset: 0, duration: 1.1, ease: 'power3.out', delay: 2.35 }
+        );
+      }
+
+      if (logoDotRef.current) {
+        gsap.fromTo(
+          logoDotRef.current,
+          { scale: 1, opacity: 0.8 },
+          {
+            scale: 1.7,
+            opacity: 1,
+            duration: 0.22,
+            yoyo: true,
+            repeat: 1,
+            ease: 'power2.inOut',
+            delay: 2.55,
+          }
+        );
+      }
+    }, headerRef);
 
     // Transparent → glassmorphic on 40px scroll
     const handleScroll = () => {
@@ -52,7 +77,10 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
     });
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      ctx.revert();
+    };
   }, []);
 
   useGSAP(() => {
@@ -99,7 +127,6 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
           <div style={{
             width: '36px',
             height: '36px',
-            border: '1px solid rgba(0,212,255,0.3)',
             borderRadius: '6px',
             display: 'flex',
             alignItems: 'center',
@@ -109,7 +136,9 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
             fontWeight: 600,
             color: 'var(--accent-cyan)',
             letterSpacing: '0.05em',
+            border: '1px solid rgba(0,212,255,0.2)',
             transition: 'border-color 0.3s, box-shadow 0.3s',
+            position: 'relative',
           }}
           onMouseEnter={e => {
             (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,212,255,0.7)';
@@ -120,6 +149,24 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
             (e.currentTarget as HTMLElement).style.boxShadow = 'none';
           }}
           >
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+            >
+              <rect
+                ref={logoBadgePathRef}
+                x="1"
+                y="1"
+                width="34"
+                height="34"
+                rx="6"
+                fill="none"
+                stroke="rgba(0,212,255,0.85)"
+                strokeWidth="1"
+              />
+            </svg>
             KS
           </div>
           <span style={{
@@ -128,7 +175,10 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
             letterSpacing: '0.08em',
             color: 'var(--text-primary)',
           }}>
-            KENIL<span style={{ color: 'var(--accent-cyan)' }}>.</span>
+            KENIL
+            <span ref={logoDotRef} style={{ color: 'var(--accent-cyan)', display: 'inline-block' }}>
+              .
+            </span>
           </span>
         </button>
 
@@ -140,28 +190,29 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
               onClick={() => scrollToSection(item.id)}
               style={{
                 position: 'relative',
-                padding: '0.4rem 0.85rem',
+                padding: '0.45rem 0.9rem',
+                paddingTop: activeSection === item.id ? 'calc(0.45rem - 2px)' : '0.45rem',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.65rem',
-                fontWeight: 500,
-                letterSpacing: '0.3em',
+                fontWeight: activeSection === item.id ? 600 : 500,
+                letterSpacing: '0.25em',
                 textTransform: 'uppercase',
                 color: activeSection === item.id ? 'var(--text-primary)' : 'var(--text-muted)',
-                background: activeSection === item.id ? 'rgba(0,212,255,0.06)' : 'transparent',
-                border: activeSection === item.id ? '1px solid rgba(0,212,255,0.15)' : '1px solid transparent',
-                borderRadius: '5px',
+                background: 'transparent',
+                border: 'none',
+                borderTop: activeSection === item.id ? '2px solid var(--accent-cyan)' : '2px solid transparent',
+                textShadow: activeSection === item.id ? '0 0 10px rgba(0,212,255,0.35)' : 'none',
+                borderRadius: 0,
                 cursor: 'pointer',
-                transition: 'color 0.2s, background 0.2s, border-color 0.2s',
+                transition: 'color 0.2s, border-top-color 0.2s, text-shadow 0.2s',
               }}
               onMouseEnter={e => {
-                if (activeSection !== item.id) {
+                if (activeSection !== item.id)
                   (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)';
-                }
               }}
               onMouseLeave={e => {
-                if (activeSection !== item.id) {
+                if (activeSection !== item.id)
                   (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)';
-                }
               }}
             >
               {item.label}
@@ -171,7 +222,7 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
 
         {/* CTA + Mobile toggle */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          {/* Hire Me button — desktop */}
+          {/* Hire Me button — desktop (amber, availability dot) */}
           <button
             className="hidden md:block shimmer-btn"
             onClick={() => scrollToSection('contact')}
@@ -181,27 +232,36 @@ const Header: FC<HeaderProps> = ({ scrollToSection }) => {
               fontWeight: 600,
               letterSpacing: '0.25em',
               textTransform: 'uppercase',
-              color: 'var(--accent-cyan)',
-              border: '1px solid rgba(0,212,255,0.3)',
+              color: 'var(--accent-amber)',
+              border: '1px solid rgba(245,158,11,0.35)',
               borderRadius: '9999px',
-              padding: '0.5rem 1.5rem',
+              padding: '0.5rem 1.5rem 0.5rem 1.1rem',
               background: 'transparent',
               cursor: 'pointer',
-              transition: 'border-color 0.3s, box-shadow 0.3s, color 0.3s',
+              transition: 'border-color 0.3s, box-shadow 0.3s, background 0.3s',
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+              boxShadow: '0 0 10px rgba(245,158,11,0.15)',
             }}
             onMouseEnter={e => {
               const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = 'rgba(0,212,255,0.7)';
-              el.style.boxShadow = '0 0 14px rgba(0,212,255,0.2)';
-              el.style.color = 'var(--text-primary)';
+              el.style.borderColor = 'rgba(245,158,11,0.7)';
+              el.style.boxShadow = '0 0 18px rgba(245,158,11,0.25)';
+              el.style.background = 'rgba(245,158,11,0.15)';
             }}
             onMouseLeave={e => {
               const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = 'rgba(0,212,255,0.3)';
-              el.style.boxShadow = 'none';
-              el.style.color = 'var(--accent-cyan)';
+              el.style.borderColor = 'rgba(245,158,11,0.35)';
+              el.style.boxShadow = '0 0 10px rgba(245,158,11,0.15)';
+              el.style.background = 'transparent';
             }}
           >
+            <span style={{
+              width: '6px', height: '6px', borderRadius: '50%',
+              background: 'var(--accent-amber)',
+              boxShadow: '0 0 10px rgba(245,158,11,0.6)',
+              animation: 'pulse-dot 1.4s ease-in-out infinite',
+              flexShrink: 0,
+            }} />
             Hire Me
           </button>
 

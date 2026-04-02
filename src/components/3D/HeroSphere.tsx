@@ -24,19 +24,19 @@ function EnergySphere() {
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const t = clock.elapsedTime;
-    ref.current.rotation.y = t * 0.09;
-    ref.current.rotation.x = t * 0.05;
+    ref.current.rotation.y = t * 0.08;
+    ref.current.rotation.x = t * 0.04;
   });
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[1.05, 96, 96]} />
+      <sphereGeometry args={[1.08, 128, 128]} />
       <MeshDistortMaterial
-        color="#040f1c"
-        metalness={1}
-        roughness={0.0}
-        distort={0.36}
-        speed={2}
-        envMapIntensity={5}
+        color="#040910"
+        metalness={0.9}
+        roughness={0.1}
+        distort={0.28}
+        speed={1.2}
+        envMapIntensity={4.6}
       />
     </mesh>
   );
@@ -168,6 +168,37 @@ function DustRing({ radius, count, color }: { radius: number; count: number; col
   );
 }
 
+function SurroundingParticles({ count = 220 }: { count?: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const positions = useMemo(() => {
+    const arr = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const phi = Math.acos(2 * Math.random() - 1);
+      const theta = Math.random() * Math.PI * 2;
+      const r = 2.1 + Math.random() * 1.7;
+
+      arr[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      arr[i * 3 + 1] = r * Math.cos(phi);
+      arr[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+    }
+    return arr;
+  }, [count]);
+
+  useFrame(({ clock }) => {
+    if (!ref.current) return;
+    ref.current.rotation.y = clock.elapsedTime * 0.025;
+  });
+
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial color="#d8f5ff" size={0.018} sizeAttenuation transparent opacity={0.22} />
+    </points>
+  );
+}
+
 /* ─── Complete scene ─── */
 const HeroSphere = () => (
   <Canvas
@@ -177,14 +208,13 @@ const HeroSphere = () => (
     gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
   >
     {/* Lighting */}
-    <ambientLight intensity={0.08} />
-    <pointLight position={[3, 3, 3]} color="#00D4FF" intensity={16} distance={18} decay={2} />
-    <pointLight position={[-3, -2, 2]} color="#F59E0B" intensity={9} distance={14} decay={2} />
-    <pointLight position={[0, 0, 4]} color="#ffffff" intensity={1} distance={10} decay={2} />
-    <pointLight position={[-1, 3, -2]} color="#A78BFA" intensity={6} distance={12} decay={2} />
+    <ambientLight intensity={0.06} />
+    <pointLight position={[2.9, 2.6, 3.1]} color="#00D4FF" intensity={15} distance={18} decay={2} />
+    <pointLight position={[-2.8, -2.2, 2.2]} color="#F59E0B" intensity={10} distance={15} decay={2} />
+    <pointLight position={[0, 0.5, 4]} color="#ffffff" intensity={0.8} distance={10} decay={2} />
 
-    {/* Core — minimal float to avoid drift */}
-    <Float speed={1.4} rotationIntensity={0.12} floatIntensity={0.3}>
+    {/* Core — gentle float so sphere remains dominant */}
+    <Float speed={0.8} rotationIntensity={0.08} floatIntensity={0.2}>
       <GlowHalo />
       <EnergySphere />
       <CrystalCore />
@@ -203,9 +233,10 @@ const HeroSphere = () => (
     {/* Particle belts */}
     <DustRing radius={1.48} count={180} color="#00D4FF" />
     <DustRing radius={1.82} count={130} color="#A78BFA" />
+    <SurroundingParticles count={240} />
 
     {/* Sparkle cloud */}
-    <Sparkles count={60} scale={4.5} size={0.9} speed={0.2} opacity={0.35} color="#00D4FF" />
+    <Sparkles count={44} scale={4.8} size={0.8} speed={0.2} opacity={0.2} color="#9CEBFF" />
   </Canvas>
 );
 
