@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useRef, MouseEvent } from 'react';
+import { FC, ReactNode, useRef, MouseEvent } from 'react';
 import { gsap } from 'gsap';
 
 interface MagneticButtonProps {

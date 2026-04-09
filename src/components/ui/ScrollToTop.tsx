@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import MagneticButton from './MagneticButton';
 
 const ScrollToTop: FC = () => {
   const [isVisible, setIsVisible] = useState(false);
