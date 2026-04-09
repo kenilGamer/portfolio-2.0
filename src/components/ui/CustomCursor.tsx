@@ -9,6 +9,18 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
   const dotRef  = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
 
+  const isInteractiveTarget = (target: EventTarget | null) => {
+    if (!(target instanceof Element)) return false;
+
+    return (
+      target.tagName === 'A' ||
+      target.tagName === 'BUTTON' ||
+      Boolean(target.closest('a')) ||
+      Boolean(target.closest('button')) ||
+      Boolean(target.closest('[role="button"]'))
+    );
+  };
+
   useEffect(() => {
     if (!enabled || !dotRef.current || !ringRef.current) return;
 
@@ -33,15 +45,7 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
     };
 
     const handleMouseEnter = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const isInteractive =
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.closest('[role="button"]');
-
-      if (isInteractive) {
+      if (isInteractiveTarget(e.target)) {
         // Ring scales up 2x, dot disappears
         gsap.to(ring, {
           scale: 2,
@@ -54,15 +58,7 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
     };
 
     const handleMouseLeave = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const isInteractive =
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.closest('[role="button"]');
-
-      if (isInteractive) {
+      if (isInteractiveTarget(e.target)) {
         gsap.to(ring, {
           scale: 1,
           borderColor: 'rgba(0,212,255,0.5)',
@@ -107,14 +103,12 @@ const CustomCursor: FC<CustomCursorProps> = ({ enabled = true }) => {
       {/* Dot — 6px, instant, mix-blend-mode screen */}
       <div
         ref={dotRef}
-        className="custom-cursor"
         className="custom-cursor fixed left-0 top-0 z-[10001] h-[6px] w-[6px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent-cyan)] pointer-events-none mix-blend-screen"
       />
 
       {/* Ring — 32px hollow, lagged */}
       <div
         ref={ringRef}
-        className="custom-cursor"
         className="custom-cursor fixed left-0 top-0 z-[10000] h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(0,212,255,0.5)] pointer-events-none"
       />
     </>

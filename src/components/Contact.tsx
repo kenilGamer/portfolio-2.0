@@ -54,7 +54,7 @@ const Contact: FC = () => {
 
     try {
       await emailjs.sendForm(
-        'service_ffce6e5',
+        'service_y7e3e3v',
         'template_5u31fvp',
         formRef.current!,
         { publicKey: 'ugCBbxaJsWvscldSi' }
